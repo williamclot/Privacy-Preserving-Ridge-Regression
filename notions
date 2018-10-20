@@ -1,0 +1,4 @@
+Linear Homomorphic algorithms (Pallier or Regev)
+Evaluator = Homophoric + Gao
+
+The idea is that if there is a compromise somewhere, the attacker will not have any information on the users data, only on the final output model.
