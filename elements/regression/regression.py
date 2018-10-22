@@ -32,6 +32,24 @@ def getb(Xt, Y):
     return b
 
 
+def cholesky0(A):
+    """
+       Performs a Cholesky decomposition of on symmetric, pos-def A.
+       Returns lower-triangular L (full sized, zeroed above diag)
+    """
+    n = A.shape[0]
+    L = np.zeros_like(A)
+
+    # Perform the Cholesky decomposition
+    for row in range(n):
+        for col in range(row+1):
+            tmp_sum = np.dot(L[row,:col], L[col,:col])         
+            if (row == col): # Diagonal elements
+                L[row, col] = math.sqrt(max(A[row,row] - tmp_sum, 0))
+            else:
+                L[row,col] = (1.0 / L[col,col]) * (A[row,col] - tmp_sum)
+    return L
+
 ##--------* Regression *---------##
 
 data = opendata("./../../datasets/forestfires.csv")
@@ -47,4 +65,5 @@ X = data[['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']].values
 A, Xt = getA(X)
 b = getb(Xt, Y)
 
-print(A)
+L = cholesky0(A)
+print(L)
