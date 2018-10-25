@@ -7,17 +7,31 @@ import numpy as np
 public_key, private_key = paillier.generate_paillier_keypair()
 
 # List of numbers we want to encrypt
-secret_number_list = [1, 2, 3]
+secret_number_list = [3, 5, 7, 9, 11]
 
 # We encrypt the list using the public key
 encrypted_number_list = [public_key.encrypt(x) for x in secret_number_list]
 
-sum = 0
 
-for i in range(len(encrypted_number_list)) :
-    # encrypted_number_list[i] = encrypted_number_list[i] * 2
-    sum += encrypted_number_list[i] * 2
+def sum_mult(encrypted_number_list, private_key):
+    sum = 0
+    for i in range(len(encrypted_number_list)) :
+        # encrypted_number_list[i] = encrypted_number_list[i] * 2
+        sum += encrypted_number_list[i] * 2
+    # encrypted_mean = np.sum(encrypted_number_list)
 
-# encrypted_mean = np.sum(encrypted_number_list)
+    return private_key.decrypt(sum)
 
-print(private_key.decrypt(sum))
+
+def mean(encrypted_number_list, private_key):
+    sum = 0
+    for i in range(len(encrypted_number_list)):
+        sum += encrypted_number_list[i]
+    mean = sum / len(encrypted_number_list)
+    return private_key.decrypt(mean)
+
+
+
+
+print("sum of element multiplied by 2 =", sum_mult(encrypted_number_list, private_key))
+print("meaen of the list is =", mean(encrypted_number_list, private_key))
