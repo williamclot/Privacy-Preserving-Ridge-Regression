@@ -81,7 +81,10 @@ b = getb(Xt, Y)
 L = cholesky0(A)
 LT = np.transpose(L)
 
+
+#back_substitution to find y
 Y = back_substitution(LT,b)
-# print(Y)
+
+#back_substitution to find beta
 beta = back_substitution(L,Y)
 print("beta =\n",beta)
