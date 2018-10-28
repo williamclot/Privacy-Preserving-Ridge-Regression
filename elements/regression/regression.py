@@ -102,3 +102,7 @@ beta = back_substitution_lower(L,Y)
 
 print(np.dot(A, beta))
 print(b)
+
+#print(A)
+print(L)
+#print(np.dot(L, LT))
