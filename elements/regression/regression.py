@@ -49,6 +49,8 @@ def cholesky0(A):
             else:
                 L[row,col] = (1.0 / L[col,col]) * (A[row,col] - tmp_sum)
     return L
+
+    
 #perform a back substitution to find y first and then beta
 def back_substitution(LT,b):
     d = len(X[0])
