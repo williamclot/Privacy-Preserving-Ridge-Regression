@@ -55,7 +55,7 @@ def cholesky0(A):
 
 
 def back_substitution_upper(LT,b):
-    d = len(X[0])
+    d = len(b)
     Y = np.zeros((d,1))
     Y[d-1][0]=b[d-1][0]/LT[d-1][d-1]
     for i in range(d-2,-1,-1):
@@ -66,10 +66,10 @@ def back_substitution_upper(LT,b):
     return Y
 
 def back_substitution_lower(L,Y):
-    d = len(X[0])
+    d = len(Y)
     beta = np.zeros((d,1))
     beta[0][0]=Y[0][0]/L[0][0]
-    for i in range(1,8):
+    for i in range(1,d):
         for j in range(0,i):
             Y[i][0]=Y[i][0]-(L[i][j]*beta[j][0])
         beta[i][0]=Y[i][0]/L[i][i]
@@ -92,13 +92,24 @@ A, Xt = getA(X)
 b = getb(Xt, Y)
 L = cholesky0(A)
 LT = np.transpose(L)
-
-
+# print("LT=", LT)
+# print("L=", L)
+# print("A=", A)
+# print("LT*L", np.dot(LT,L))
+# print("L*LT",np.dot(L,LT))
+M1=[[7,0,0,0,0],[1,6,0,0,0],[2,4,5,0,0],[7,3,1,8,0],[6,8,4,2,1]]
+M3=[[7],[7],[11],[19],[21]]
+M2=back_substitution_lower(M1,M3)
+print("M2=",M2)
 #back_substitution to find y
 Y = back_substitution_upper(LT,b)
+print("b=",b)
+print("compared to", np.dot(LT,Y))
 
 #back_substitution to find beta
 beta = back_substitution_lower(L,Y)
+print("Y=",Y)
+print("compared to",np.dot(L,beta))
 
 print(np.dot(A, beta))
 print(b)
