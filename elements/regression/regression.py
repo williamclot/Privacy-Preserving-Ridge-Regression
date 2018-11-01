@@ -50,25 +50,33 @@ def cholesky0(A):
                 L[row,col] = (1.0 / L[col,col]) * (A[row,col] - tmp_sum)
     return L
 
-    
-#perform a back substitution to find y first and then beta
-def back_substitution(LT,b):
+
+
+def back_substitution_upper(LT,b):
     d = len(X[0])
     Y = np.zeros((d,1))
-    
-    #last equation of the matrix product
     Y[d-1][0]=b[d-1][0]/LT[d-1][d-1]
-
     for i in range(d-2,-1,-1):
         for j in range(d-1,i,-1):
-            b[i][0]=b[i][0]-(LT[i][j]*Y[j])
+            b[i][0]=b[i][0]-(LT[i][j]*Y[j][0])
         Y[i][0]=b[i][0]/LT[i][i]
 
     return Y
 
+def back_substitution_lower(L,Y):
+    d = len(X[0])
+    beta = np.zeros((d,1))
+    beta[0][0]=Y[0][0]/L[0][0]
+    for i in range(1,8):
+        for j in range(0,i):
+            Y[i][0]=Y[i][0]-(L[i][j]*beta[j][0])
+        beta[i][0]=Y[i][0]/L[i][i]
+
+    return beta
+
 ##--------* Regression *---------##
 
-data = opendata("./../../datasets/forestfires.csv")
+data = opendata("../../../forestfires.csv")
 
 Y = data[['area']].values
 
@@ -85,8 +93,14 @@ LT = np.transpose(L)
 
 
 #back_substitution to find y
-Y = back_substitution(LT,b)
+Y = back_substitution_upper(LT,b)
 
 #back_substitution to find beta
-beta = back_substitution(L,Y)
-print("beta =\n",beta)
+beta = back_substitution_lower(L,Y)
+
+print(np.dot(A, beta))
+print(b)
+
+#print(A)
+print(L)
+#print(np.dot(L, LT))
