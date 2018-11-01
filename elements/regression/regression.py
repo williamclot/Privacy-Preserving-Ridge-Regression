@@ -52,8 +52,6 @@ def cholesky0(A):
 
 
 
-
-
 def back_substitution_upper(LT,b):
     d = len(b)
     Y = np.zeros((d,1))

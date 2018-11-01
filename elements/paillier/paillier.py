@@ -34,4 +34,4 @@ def mean(encrypted_number_list, private_key):
 
 
 print("sum of element multiplied by 2 =", sum_mult(encrypted_number_list, private_key))
-print("meaen of the list is =", mean(encrypted_number_list, private_key))
+print("mean of the list is =", mean(encrypted_number_list, private_key))
