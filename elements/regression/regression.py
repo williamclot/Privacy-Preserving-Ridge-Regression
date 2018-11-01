@@ -97,9 +97,13 @@ LT = np.transpose(L)
 # print("A=", A)
 # print("LT*L", np.dot(LT,L))
 # print("L*LT",np.dot(L,LT))
-M1=[[7,0,0,0,0],[1,6,0,0,0],[2,4,5,0,0],[7,3,1,8,0],[6,8,4,2,1]]
-M3=[[7],[7],[11],[19],[21]]
-M2=back_substitution_lower(M1,M3)
+# M1=[[7,0,0,0,0],[1,6,0,0,0],[2,4,5,0,0],[7,3,1,8,0],[6,8,4,2,1]]
+# M3=[[7],[7],[11],[19],[21]]
+# M2=back_substitution_upper(M1,M3)
+# print("M2=",M2)
+M1=[[6,3,2],[0,1,4],[0,0,1]]
+M3=[[23],[19],[4]]
+M2=back_substitution_upper(M1,M3)
 print("M2=",M2)
 #back_substitution to find y
 Y = back_substitution_upper(LT,b)
