@@ -17,16 +17,24 @@ class Regression:
         # Input X, Output Y
         self.Y = self.uniform(Y)
         self.X = self.uniform(X)
-
-        # A and b from X and Y
-        self.A, self.Xt = self.getA(self.X, lamb)
-        self.b = np.dot(self.Xt, self.Y)
-
-        # Cholesky Decomposition
-        self.L, self.Lt = self.cholesky0(self.A)
+        self.lamb = lamb
 
         # Result beta of Regression
-        self.beta = self.back_substitution_upper(self.Lt, self.back_substitution_lower(self.L, self.b))
+        self.beta = []
+
+    def train_model(self):
+        '''
+        Trains model using the training dataset
+        '''
+        # A and b from X and Y
+        A, Xt = self.getA(self.X, self.lamb)
+        b = np.dot(Xt, self.Y)
+
+        # Cholesky Decomposition
+        L, Lt = self.cholesky0(A)
+
+        self.beta = self.back_substitution_upper(Lt, self.back_substitution_lower(L, b))
+
 
     def uniform(self, frame):
         '''
