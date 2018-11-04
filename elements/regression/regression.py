@@ -76,7 +76,7 @@ def back_substitution_lower(L,Y):
 
 ##--------* Regression *---------##
 
-data = opendata("../../../forestfires.csv")
+data = opendata("../../datasets/forestfires.csv")
 
 Y = data[['area']].values
 
@@ -89,6 +89,7 @@ X = data[['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']].values
 A, Xt = getA(X)
 b = getb(Xt, Y)
 L = cholesky0(A)
+print(L)
 LT = np.transpose(L)
 # print("LT=", LT)
 # print("L=", L)
