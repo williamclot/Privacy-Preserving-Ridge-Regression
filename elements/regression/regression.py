@@ -93,18 +93,22 @@ print(L)
 LT = np.transpose(L)
 print("LT=", LT)
 print("L=", L)
-# print("A=", A)
-# print("LT*L", np.dot(LT,L))
-# print("L*LT",np.dot(L,LT))
+print("A=", A)
+print("LT*L", np.dot(LT,L))
+print("L*LT",np.dot(L,LT))
+print(np.array_equal(A,np.dot(L,LT)))
+print(np.array_equal([1,2],[1,2]))
+
 # M1up=[[7,0,0,0,0,0,0,0],[1,6,0,0,0,0,0,0],[2,4,5,0,0,0,0,0],[7,3,1,8,0,0,0,0],[6,8,4,2,1,0,0,0],[1,5,8,5,1,2,0,0],[1,1,1,1,1,1,1,0],[2,2,2,2,2,2,2,2]]
 # M3up=[[7],[7],[11],[19],[21],[22],[7],[16]]
 # M2up=back_substitution_lower(M1up,M3up)
 # print("M2up=",M2up)
 
-# M1=[[6,3,2],[0,1,4],[0,0,1]]
-# M3=[[23],[19],[4]]
-# M2=back_substitution_upper(M1,M3)
-# print("M2=",M2)
+M1=[[6.3,3.2,2.1],[0,1.7,4.2],[0,0,1.3]]
+# M2=[[2,1,3]]
+M3=[[22.1],[14.3],[3.9]]
+M2=back_substitution_upper(M1,M3)
+print("M2=",M2)
 
 
 #back_substitution to find y
