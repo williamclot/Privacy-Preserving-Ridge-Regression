@@ -19,7 +19,7 @@ class Regression:
 
         # A and b from X and Y
         self.A, self.Xt = self.getA(X, lamb)
-        self.b = self.getb(self.Xt, self.Y)
+        self.b = np.dot(self.Xt, self.Y)
 
         # Cholesky Decomposition
         self.L, self.Lt = self.cholesky0(self.A)
@@ -38,15 +38,6 @@ class Regression:
         A = np.dot(Xt, X)+lamb*I
 
         return A, Xt
-
-    def getb(self, Xt, Y):
-        '''
-        Get b from Xt and Y
-        '''
-        b = np.dot(Xt, Y)
-
-        return b
-
 
     def cholesky0(self, A):
         """
