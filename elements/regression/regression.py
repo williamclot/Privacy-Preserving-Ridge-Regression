@@ -57,27 +57,27 @@ class Regression:
                     L[row,col] = (1.0 / L[col,col]) * (A[row,col] - tmp_sum)
         return L, np.transpose(L)
 
-    def back_substitution_upper(self, LT, b):
-        new = np.copy(b)
-        d = len(new)
+    def back_substitution_upper(self, LT, Y):
+        tmp = np.copy(Y)
+        d = len(tmp)
         Y = np.zeros((d,1))
-        Y[d-1][0]=new[d-1][0]/LT[d-1][d-1]
+        Y[d-1][0]=tmp[d-1][0]/LT[d-1][d-1]
         for i in range(d-2,-1,-1):
             for j in range(d-1,i,-1):
-                new[i][0]=new[i][0]-(LT[i][j]*Y[j][0])
-            Y[i][0]=new[i][0]/LT[i][i]
+                tmp[i][0]=tmp[i][0]-(LT[i][j]*Y[j][0])
+            Y[i][0]=tmp[i][0]/LT[i][i]
 
         return Y
 
-    def back_substitution_lower(self, L, Y):
-        new = np.copy(Y)
-        d = len(new)
+    def back_substitution_lower(self, L, b):
+        tmp = np.copy(b)
+        d = len(tmp)
         beta = np.zeros((d,1))
         beta[0][0]=new[0][0]/L[0][0]
         for i in range(1,d):
             for j in range(0,i):
-                new[i][0]=new[i][0]-(L[i][j]*beta[j][0])
-            beta[i][0]=new[i][0]/L[i][i]
+                tmp[i][0]=tmp[i][0]-(L[i][j]*beta[j][0])
+            beta[i][0]=tmp[i][0]/L[i][i]
 
         return beta
 
