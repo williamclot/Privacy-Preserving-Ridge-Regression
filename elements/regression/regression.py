@@ -14,11 +14,12 @@ import math
 
 class Regression:
     def __init__(self, X, Y, lamb=0.1):
-        self.Y = Y
-        self.X = X
+        # Input X, Output Y
+        self.Y = self.uniform(Y)
+        self.X = self.uniform(X)
 
         # A and b from X and Y
-        self.A, self.Xt = self.getA(X, lamb)
+        self.A, self.Xt = self.getA(self.X, lamb)
         self.b = np.dot(self.Xt, self.Y)
 
         # Cholesky Decomposition
@@ -26,6 +27,19 @@ class Regression:
 
         # Result beta of Regression
         self.beta = self.back_substitution_upper(self.Lt, self.back_substitution_lower(self.L, self.b))
+
+    def uniform(self, frame):
+        '''
+        Uniformizing dataset on [0, 1] range depending on min and max values of each column
+        '''
+        # max and min values for each column (returns a dataframe)
+        maxV = frame.max()
+        minV = frame.min()
+
+        for column in frame:
+            frame[column]=(frame[column]-minV[column])/(maxV[column]-minV[column])
+        
+        return frame.values
 
     def getA(self, X, lamb):
         '''
@@ -40,10 +54,10 @@ class Regression:
         return A, Xt
 
     def cholesky0(self, A):
-        """
+        '''
         Performs a Cholesky decomposition of on symmetric, pos-def A.
         Returns lower-triangular L (full sized, zeroed above diag)
-        """
+        '''
         n = A.shape[0]
         L = np.zeros_like(A)
 

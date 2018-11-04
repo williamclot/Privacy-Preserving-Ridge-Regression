@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+'''Ridge Regression test using Python (pandas & numpy)'''
+
+__author__ = "William CLOT, www.github.com/williamclot; Camille PLAYS, www.github.com/camilleplays"
+__license__ = "MIT"
+__date__ = "22/10/2018"
+
 import pandas as pd
 import numpy as np
 import math
@@ -26,12 +32,11 @@ def prepareValues():
     # Opening up the dataset and extracting useful data (X, Y)
     dataset = pd.read_csv("../../datasets/forestfires.csv")
 
-    Y = dataset[['area']].values
-    # Applying the log model to the area
-    for i in range(len(Y)):
-        Y[i] = math.log(Y[i]+1)
+    Y = dataset[['area']]
+    # Applying the log model to the area using pandas apply() function
+    Y = Y.apply(lambda x: np.log(x + 1))
 
-    X = dataset[['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']].values
+    X = dataset[['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']]
 
     return X, Y
 
