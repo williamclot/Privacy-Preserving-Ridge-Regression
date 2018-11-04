@@ -13,22 +13,21 @@ import math
 ##---------* Functions *----------##
 
 class Regression:
+    def __init__(self, X, Y, lamb=0.1):
+        self.Y = Y
+        self.X = X
 
-    def __init__(self, url):
-        self.data = self.opendata(url)
-        self.Y = self.data[['area']].values
-        self.X = self.data[['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']].values
+        # A and b from X and Y
+        self.A, self.Xt = self.getA(X, lamb)
+        self.b = self.getb(self.Xt, self.Y)
 
-        # Applying the logarithm model to the area
-        for i in range(len(self.Y)):
-            self.Y[i] = math.log(self.Y[i]+1)
+        # Cholesky Decomposition
+        self.L, self.Lt = self.cholesky0(self.A)
 
+        # Result beta of Regression
+        self.beta = self.back_substitution_upper(self.Lt, self.back_substitution_lower(self.L, self.b))
 
-    
-    def opendata(self, url):
-        return pd.read_csv(url)
-
-    def getA(self, X, lamb=0.1):
+    def getA(self, X, lamb):
         '''
         Get A from X and lambda
         '''
@@ -65,11 +64,9 @@ class Regression:
                     L[row, col] = math.sqrt(max(A[row,row] - tmp_sum, 0))
                 else:
                     L[row,col] = (1.0 / L[col,col]) * (A[row,col] - tmp_sum)
-        return L
+        return L, np.transpose(L)
 
-
-
-    def back_substitution_upper(self, LT,b):
+    def back_substitution_upper(self, LT, b):
         new = np.copy(b)
         d = len(new)
         Y = np.zeros((d,1))
@@ -81,7 +78,7 @@ class Regression:
 
         return Y
 
-    def back_substitution_lower(self, L,Y):
+    def back_substitution_lower(self, L, Y):
         new = np.copy(Y)
         d = len(new)
         beta = np.zeros((d,1))
