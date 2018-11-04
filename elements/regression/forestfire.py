@@ -45,6 +45,6 @@ print(Regression.beta)
 
 print(termcol.WARNING+ "A*beta :"+ termcol.ENDC)
 print(np.dot(Regression.A, Regression.beta))
-
+# assert(np.dot(Regression.A, Regression.beta) == Regression.b)
 print(termcol.WARNING+"b :"+ termcol.ENDC)
 print(Regression.b)

@@ -73,7 +73,7 @@ class Regression:
         tmp = np.copy(b)
         d = len(tmp)
         beta = np.zeros((d,1))
-        beta[0][0]=new[0][0]/L[0][0]
+        beta[0][0]=tmp[0][0]/L[0][0]
         for i in range(1,d):
             for j in range(0,i):
                 tmp[i][0]=tmp[i][0]-(L[i][j]*beta[j][0])
