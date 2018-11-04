@@ -88,10 +88,14 @@ for i in range(len(Y)):
 
 X = data[['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']].values
 
+# computing A
 A, Xt = getA(X)
+
+# computing b
 b = getb(Xt, Y)
+
+# spliting A into L and LT
 L = cholesky0(A)
-print(L)
 LT = np.transpose(L)
 
 #back_substitution to find y
@@ -104,6 +108,12 @@ beta = back_substitution_upper(LT,Y)
 print("Y=",Y)
 print("compared to",np.dot(LT,beta))
 
+# checking the equation A*beta=b
 print("A*beta=",np.dot(A, beta))
 print("b=",b)
 print("beta=",beta)
+
+
+# checking the result when dealing with small data set by inversing the matrix A
+Ainv=np.linalg.inv(A)
+print(np.dot(Ainv,b))
