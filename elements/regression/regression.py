@@ -53,24 +53,26 @@ def cholesky0(A):
 
 
 def back_substitution_upper(LT,b):
-    d = len(b)
+    new = np.copy(b)
+    d = len(new)
     Y = np.zeros((d,1))
-    Y[d-1][0]=b[d-1][0]/LT[d-1][d-1]
+    Y[d-1][0]=new[d-1][0]/LT[d-1][d-1]
     for i in range(d-2,-1,-1):
         for j in range(d-1,i,-1):
-            b[i][0]=b[i][0]-(LT[i][j]*Y[j][0])
-        Y[i][0]=b[i][0]/LT[i][i]
+            new[i][0]=new[i][0]-(LT[i][j]*Y[j][0])
+        Y[i][0]=new[i][0]/LT[i][i]
 
     return Y
 
 def back_substitution_lower(L,Y):
-    d = len(Y)
+    new = np.copy(Y)
+    d = len(new)
     beta = np.zeros((d,1))
-    beta[0][0]=Y[0][0]/L[0][0]
+    beta[0][0]=new[0][0]/L[0][0]
     for i in range(1,d):
         for j in range(0,i):
-            Y[i][0]=Y[i][0]-(L[i][j]*beta[j][0])
-        beta[i][0]=Y[i][0]/L[i][i]
+            new[i][0]=new[i][0]-(L[i][j]*beta[j][0])
+        beta[i][0]=new[i][0]/L[i][i]
 
     return beta
 
@@ -91,25 +93,6 @@ b = getb(Xt, Y)
 L = cholesky0(A)
 print(L)
 LT = np.transpose(L)
-print("LT=", LT)
-print("L=", L)
-print("A=", A)
-print("LT*L", np.dot(LT,L))
-print("L*LT",np.dot(L,LT))
-print(np.array_equal(A,np.dot(L,LT)))
-print(np.array_equal([1,2],[1,2]))
-
-# M1up=[[7,0,0,0,0,0,0,0],[1,6,0,0,0,0,0,0],[2,4,5,0,0,0,0,0],[7,3,1,8,0,0,0,0],[6,8,4,2,1,0,0,0],[1,5,8,5,1,2,0,0],[1,1,1,1,1,1,1,0],[2,2,2,2,2,2,2,2]]
-# M3up=[[7],[7],[11],[19],[21],[22],[7],[16]]
-# M2up=back_substitution_lower(M1up,M3up)
-# print("M2up=",M2up)
-
-M1=[[6.3,3.2,2.1],[0,1.7,4.2],[0,0,1.3]]
-# M2=[[2,1,3]]
-M3=[[22.1],[14.3],[3.9]]
-M2=back_substitution_upper(M1,M3)
-print("M2=",M2)
-
 
 #back_substitution to find y
 Y = back_substitution_lower(L,b)
@@ -123,7 +106,4 @@ print("compared to",np.dot(LT,beta))
 
 print("A*beta=",np.dot(A, beta))
 print("b=",b)
-
-#print(A)
-print(L)
-#print(np.dot(L, LT))
+print("beta=",beta)
