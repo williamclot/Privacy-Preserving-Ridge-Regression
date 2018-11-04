@@ -39,6 +39,12 @@ def prepareValues():
 X, Y = prepareValues();
 
 Regression = rd.Regression(X, Y)
-print(termcol.WARNING+ "beta :"+ termcol.ENDC)
 
+print(termcol.WARNING+ "beta :"+ termcol.ENDC)
 print(Regression.beta)
+
+print(termcol.WARNING+ "A*beta :"+ termcol.ENDC)
+print(np.dot(Regression.A, Regression.beta))
+
+print(termcol.WARNING+"b :"+ termcol.ENDC)
+print(Regression.b)
