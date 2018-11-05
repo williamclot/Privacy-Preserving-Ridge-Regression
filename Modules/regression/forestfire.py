@@ -24,13 +24,17 @@ class termcol:
 
 ##--------* Regression *---------##
 
-def prepareValues():
+def prepareValues(train_frac=0.8):
     '''
     Function to prepare the values of the dataset before calling the Regression Class
     '''
     print(termcol.HEADER + "Opening up the dataset..."+termcol.ENDC)
     # Opening up the dataset and extracting useful data (X, Y)
     dataset = pd.read_csv("../../datasets/forestfires.csv")
+    
+    # Randomizing the rows of the dataset (separation between training a testing dataset)
+    print(termcol.HEADER + "Opening up the dataset..."+termcol.ENDC)
+    dataset = dataset.sample(frac=1).reset_index(drop=True)
 
     Y = dataset[['area']]
     # Applying the log model to the area using pandas apply() function
@@ -38,17 +42,24 @@ def prepareValues():
 
     X = dataset[['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']]
 
-    return X, Y
+    # Separation between train dataset and test dataset
+    data_lenght = dataset.shape[0]
+    index_separation = int(data_lenght * train_frac)
+
+    return X.iloc[:index_separation], Y.iloc[:index_separation], X.iloc[index_separation:], Y.iloc[index_separation:] 
 
 
-X, Y = prepareValues()
-Regression = rd.Regression(X[:int(X.shape[0]*0.8)], Y[:int(Y.shape[0]*0.8)])
+X, Y, Xtest, Ytest = prepareValues()
+Regression = rd.Regression(X,Y)
 Regression.train_model()
-result = Regression.test_model(X[int(X.shape[0]*0.8):], Y[int(Y.shape[0]*0.8):])
-
 
 print(termcol.WARNING+ "beta :"+ termcol.ENDC)
 print(Regression.beta)
+
+
+result = Regression.test_model(Xtest,Ytest)
+print(result)
+
 
 # print(termcol.WARNING+ "A*beta :"+ termcol.ENDC)
 # print(np.dot(Regression.A, Regression.beta))
