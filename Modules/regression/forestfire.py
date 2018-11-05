@@ -41,10 +41,11 @@ def prepareValues():
     return X, Y
 
 
-X, Y = prepareValues();
-
-Regression = rd.Regression(X, Y)
+X, Y = prepareValues()
+Regression = rd.Regression(X[:int(X.shape[0]*0.8)], Y[:int(Y.shape[0]*0.8)])
 Regression.train_model()
+result = Regression.test_model(X[int(X.shape[0]*0.8):], Y[int(Y.shape[0]*0.8):])
+
 
 print(termcol.WARNING+ "beta :"+ termcol.ENDC)
 print(Regression.beta)

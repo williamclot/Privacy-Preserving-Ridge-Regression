@@ -36,6 +36,36 @@ class Regression:
         self.beta = self.back_substitution_upper(Lt, self.back_substitution_lower(L, b))
 
 
+    def test_model(self, Xtest, Ytest):
+        '''
+        Testing the model with the last 20% of the dataset left, uniforming the values with the same max and min used to train the model (questions to ask)
+        '''
+
+        #transpose(beta)*x = y
+
+        #Uniformizing the inputs
+        for column in Xtest:
+            Xtest[column]=(Xtest[column]-self.Xmin[column])/(self.Xmax[column]-self.Xmin[column])
+        for column in Ytest:
+            Ytest[column]=(Ytest[column]-self.Ymin[column])/(self.Ymax[column]-self.Ymin[column])
+
+        # back to arrays
+        Xtest = Xtest.values
+        Ytest = Ytest.values
+
+        # compute transpose of beta
+        tbeta = np.transpose(self.beta)
+
+        # loop over each contribution, compute performance of our model
+        sum_err = 0
+        for i in range(len(Xtest)):
+            predictedY = np.dot(tbeta, Xtest[i])
+            sum_err += abs(Ytest - predictedY)
+
+        sum_err = sum_err/len(Xtest[0])
+        return sum_err
+
+
     def uniform(self, frame):
         '''
         Uniformizing dataset on [0, 1] range depending on min and max values of each column
