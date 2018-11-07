@@ -30,7 +30,7 @@ def prepareValues():
     '''
     print(termcol.HEADER + "Opening up the dataset..."+termcol.ENDC)
     # Opening up the dataset and extracting useful data (X, Y)
-    dataset = pd.read_csv("../../datasets/forestfires.csv")
+    dataset = pd.read_csv("../../Datasets/forestfires.csv")
 
     Y = dataset[['area']]
     # Applying the log model to the area using pandas apply() function
