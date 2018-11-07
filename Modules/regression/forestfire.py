@@ -30,12 +30,11 @@ def prepareValues(train_frac=0.8):
     '''
     print(termcol.HEADER + "Opening up the dataset..."+termcol.ENDC)
     # Opening up the dataset and extracting useful data (X, Y)
-<<<<<<< HEAD
+
     dataset = pd.read_csv("../../Datasets/forestfires.csv")
     # Randomizing the rows of the dataset (separation between training a testing dataset)
     print(termcol.HEADER + "Opening up the dataset..."+termcol.ENDC)
     dataset = dataset.sample(frac=1).reset_index(drop=True)
->>>>>>> e048b42f0ba8dee1b35b0197ebadc6d9f8bef223
 
     Y = dataset[['area']]
     # Applying the log model to the area using pandas apply() function
