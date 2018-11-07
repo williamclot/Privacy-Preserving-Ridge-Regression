@@ -15,8 +15,9 @@ import math
 class Regression:
     def __init__(self, X, Y, lamb=0.1):
         # Input X, Output Y
-        self.Y = self.uniform(Y)
-        self.X = self.uniform(X)
+        self.Ymin, self.Ymax, self.Y = self.uniform(Y)
+        self.Xmin, self.Xmax, self.X = self.uniform(X)
+
         self.lamb = lamb
 
         # Result beta of Regression
@@ -38,18 +39,15 @@ class Regression:
 
     def test_model(self, Xtest, Ytest):
         '''
-        Testing the model with the last 20% of the dataset left, uniforming the values with the same max and min used to train the model (questions to ask)
+        Testing the model with the last 0.2 of the dataset left, uniforming the values with the same max and min used to train the model (questions to ask)
         '''
-
-        #transpose(beta)*x = y
-
-        #Uniformizing the inputs
+        #Uniformizing the inputs on the same range as the training data
         for column in Xtest:
             Xtest[column]=(Xtest[column]-self.Xmin[column])/(self.Xmax[column]-self.Xmin[column])
         for column in Ytest:
             Ytest[column]=(Ytest[column]-self.Ymin[column])/(self.Ymax[column]-self.Ymin[column])
 
-        # back to arrays
+        # back to arrays from pandas dataframe
         Xtest = Xtest.values
         Ytest = Ytest.values
 
@@ -60,10 +58,10 @@ class Regression:
         sum_err = 0
         for i in range(len(Xtest)):
             predictedY = np.dot(tbeta, Xtest[i])
-            sum_err += abs(Ytest - predictedY)
+            sum_err += float(abs(Ytest[i] - float(predictedY)))
 
-        sum_err = sum_err/len(Xtest[0])
-        return sum_err
+        sum_err = sum_err/Xtest.shape[0]
+        return sum_err*self.Ymax[0]
 
 
     def uniform(self, frame):
@@ -77,7 +75,7 @@ class Regression:
         for column in frame:
             frame[column]=(frame[column]-minV[column])/(maxV[column]-minV[column])
         
-        return frame.values
+        return minV, maxV, frame.values
 
     def getA(self, X, lamb):
         '''
