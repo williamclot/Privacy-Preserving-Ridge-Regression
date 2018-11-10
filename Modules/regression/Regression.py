@@ -9,24 +9,20 @@ __date__ = "22/10/2018"
 import pandas as pd
 import numpy as np
 import math
-
-class termcol:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+from termcol import termcol
 
 ##---------* Functions *----------##
 
 class Regression:
-    def __init__(self, X, Y, lamb=0.1, unified=False ,verbose=False):
-        # Input X, Output Y
-        self.Y = Y.values
-        self.X = X.values
+    def __init__(self, X, Y, lamb=0.1, unified=False, verbose=False):
+        # Programm parameters
+        self.verbose = verbose
+        self.unified = unified
+
+        # Input X, Output Y can be unified or not
+        self.Ymin, self.Ymax, self.Y = self.uniform(Y)
+        self.Xmin, self.Xmax, self.X = self.uniform(X)
+
         self.lamb = lamb
         # Result beta of Regression
         self.beta = []
@@ -34,7 +30,7 @@ class Regression:
         if(verbose):
             print(termcol.HEADER + "Output Y :"+termcol.ENDC)
             print(Y.head(5))
-            print(termcol.HEADER + "Input X (unified):"+termcol.ENDC)
+            print(termcol.HEADER + "Input X :"+termcol.ENDC)
             print(X.head(5))
 
     def train_model(self):
@@ -55,12 +51,14 @@ class Regression:
         '''
         Testing the model with the last 0.2 of the dataset left, uniforming the values with the same max and min used to train the model (questions to ask)
         '''
-        #Uniformizing the inputs on the same range as the training data
-        # for column in Xtest:
-        #     Xtest[column]=(Xtest[column]-self.Xmin[column])/(self.Xmax[column]-self.Xmin[column])
-        
-        # for column in Ytest:
-        #     Ytest[column]=(Ytest[column]-self.Ymin[column])/(self.Ymax[column]-self.Ymin[column])
+
+        if (self.unified):
+            #Uniformizing the inputs on the same range as the training data
+            for column in Xtest:
+                Xtest[column]=(Xtest[column]-self.Xmin[column])/(self.Xmax[column]-self.Xmin[column])
+            
+            for column in Ytest:
+                Ytest[column]=(Ytest[column]-self.Ymin[column])/(self.Ymax[column]-self.Ymin[column])
 
         # back to arrays from pandas dataframe
         Xtest = Xtest.values
@@ -70,21 +68,25 @@ class Regression:
         tbeta = np.transpose(self.beta)
 
         # loop over each contribution, compute performance of our model
-        sum_err = 0
+        sse = 0 # Square Sum Error 
         for i in range(len(Xtest)):
             # Getting a predicted unified value of Y (in log)
             predictedY = np.dot(tbeta, Xtest[i])
-            # Reversing the unified value to get a log predicted Y
-            # predictedY = predictedY*(self.Ymax - self.Ymin) + self.Ymin
-            # Real value (non log) of prediction
+
+            if (self.unified):
+                # Reversing the unified value to the original range
+                predictedY = predictedY*(self.Ymax - self.Ymin) + self.Ymin
+
+            # Real value of prediction (func is a for non linear regression)
             predictedY = func(predictedY)
+
             # print("predicted value : ", float(predictedY))
             # print("real value : ", float(func(Ytest[i])))
 
-            sum_err += float(abs(func(Ytest[i]) - float(predictedY)))
+            sse += math.sqrt((float(func(Ytest[i])) - float(predictedY))**2)
 
-        sum_err = sum_err/Xtest.shape[0]
-        return sum_err
+        sse = sse/Xtest.shape[0]
+        return sse
 
 
     def uniform(self, frame):
@@ -95,8 +97,9 @@ class Regression:
         maxV = frame.max()
         minV = frame.min()
 
-        for column in frame:
-            frame[column]=(frame[column]-minV[column])/(maxV[column]-minV[column])
+        if (self.unified):
+            for column in frame:
+                frame[column]=(frame[column]-minV[column])/(maxV[column]-minV[column])
         
         return minV, maxV, frame.values
 

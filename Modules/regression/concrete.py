@@ -12,15 +12,7 @@ import math
 
 import Regression as rd
 
-class termcol:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+from termcol import termcol
 
 ##--------* Regression *---------##
 
@@ -53,13 +45,21 @@ def prepareValues(train_frac=0.8, verbose=False):
     return Xtrain, Ytrain, Xtest, Ytest
 
 
-X, Y, Xtest, Ytest = prepareValues(verbose=True)
-Regression = rd.Regression(X,Y,verbose=True)
+# Preparing the values and initiating the regression class
+# ----------------------------------------------------------
+X, Y, Xtest, Ytest = prepareValues(verbose=False)
+Regression = rd.Regression(X, Y, verbose=False, unified=False)
 
+# Training the model with X and Y sets
+# -------------------------------------
 Regression.train_model()
-print(termcol.WARNING+ "beta :"+ termcol.ENDC)
+print(termcol.OKGREEN+ "Training phase of the model finished!"+ termcol.ENDC)
+print(termcol.WARNING+ "Output model of the training (beta) :"+ termcol.ENDC)
 print(Regression.beta)
 
-
-result = Regression.test_model(Xtest,Ytest)
-print(result)
+# Training the model with X and Y sets
+# -------------------------------------
+print(termcol.OKGREEN+ "Testing the model with the last 20% of the dataset!"+ termcol.ENDC)
+average_error = Regression.test_model(Xtest,Ytest)
+print(termcol.WARNING+ "Average error :"+ termcol.ENDC, average_error)
+print(termcol.WARNING+ "Precision :"+ termcol.ENDC, float(average_error/(Regression.Ymax-Regression.Ymin)))
