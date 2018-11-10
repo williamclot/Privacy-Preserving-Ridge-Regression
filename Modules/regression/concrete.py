@@ -42,9 +42,7 @@ def prepareValues(train_frac=0.8, verbose=False):
     # Extracting useful data (X, Y)
     data_lenght = dataset.shape[0]
     Y = dataset[['Strength']]
-    print(Y)
-    X = dataset.iloc[0:data_lenght-3]
-
+    X = dataset.drop(columns=['Strength'])
     # Separation between train dataset and test dataset with train_frac
     index_separation = int(data_lenght * train_frac)
     Xtrain = X.iloc[:index_separation]
@@ -56,13 +54,12 @@ def prepareValues(train_frac=0.8, verbose=False):
 
 
 X, Y, Xtest, Ytest = prepareValues(verbose=True)
-print(Y)
 Regression = rd.Regression(X,Y,verbose=True)
-# Regression.train_model()
 
-# print(termcol.WARNING+ "beta :"+ termcol.ENDC)
-# print(Regression.beta)
+Regression.train_model()
+print(termcol.WARNING+ "beta :"+ termcol.ENDC)
+print(Regression.beta)
 
 
-# result = Regression.test_model(Xtest,Ytest, func = lambda x: np.exp(x)-1)
-# print(result)
+result = Regression.test_model(Xtest,Ytest)
+print(result)

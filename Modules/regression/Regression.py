@@ -23,7 +23,7 @@ class termcol:
 ##---------* Functions *----------##
 
 class Regression:
-    def __init__(self, X, Y, lamb=0.1, verbose=False):
+    def __init__(self, X, Y, lamb=0.1, unified=False ,verbose=False):
         # Input X, Output Y
         self.Y = Y.values
         self.X = X.values
@@ -56,12 +56,12 @@ class Regression:
         Testing the model with the last 0.2 of the dataset left, uniforming the values with the same max and min used to train the model (questions to ask)
         '''
         #Uniformizing the inputs on the same range as the training data
-        for column in Xtest:
-            Xtest[column]=(Xtest[column]-self.Xmin[column])/(self.Xmax[column]-self.Xmin[column])
+        # for column in Xtest:
+        #     Xtest[column]=(Xtest[column]-self.Xmin[column])/(self.Xmax[column]-self.Xmin[column])
         
         # for column in Ytest:
         #     Ytest[column]=(Ytest[column]-self.Ymin[column])/(self.Ymax[column]-self.Ymin[column])
-        print(Xtest)
+
         # back to arrays from pandas dataframe
         Xtest = Xtest.values
         Ytest = Ytest.values
@@ -75,11 +75,11 @@ class Regression:
             # Getting a predicted unified value of Y (in log)
             predictedY = np.dot(tbeta, Xtest[i])
             # Reversing the unified value to get a log predicted Y
-            predictedY = predictedY*(self.Ymax - self.Ymin) + self.Ymin
+            # predictedY = predictedY*(self.Ymax - self.Ymin) + self.Ymin
             # Real value (non log) of prediction
             predictedY = func(predictedY)
-            print("predicted value : ", float(predictedY))
-            print("real value : ", float(func(Ytest[i])))
+            # print("predicted value : ", float(predictedY))
+            # print("real value : ", float(func(Ytest[i])))
 
             sum_err += float(abs(func(Ytest[i]) - float(predictedY)))
 
