@@ -1,7 +1,8 @@
 # datasets
-/datasets/*.csv
-/datasets/*.names
-
+/Datasets/*.csv
+/Datasets/*.names
+/Datasets/*.xlsx
+/Datasets/*.xls
 
 # production
 /.vscode

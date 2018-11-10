@@ -25,8 +25,8 @@ class termcol:
 class Regression:
     def __init__(self, X, Y, lamb=0.1, verbose=False):
         # Input X, Output Y
-        self.Ymin, self.Ymax, self.Y = self.uniform(Y)
-        self.Xmin, self.Xmax, self.X = self.uniform(X)
+        self.Y = Y.values
+        self.X = X.values
         self.lamb = lamb
         # Result beta of Regression
         self.beta = []

@@ -30,22 +30,22 @@ def prepareValues(train_frac=0.8, verbose=False):
     '''
     # Opening up the dataset using pandas to easily manipulate Dataframe variables
     print(termcol.HEADER + "Opening up the dataset..."+termcol.ENDC)
-    file = r'../../Datasets/Concrete_Data.xls'
+    file = r'../../Datasets/Concrete_Data.xlsx'
     dataset = pd.read_excel(file)
-    if(verbose): print(dataset)
+    if(verbose): print(dataset.head(5))
     
     # Randomizing the rows of the dataset (separation between training a testing dataset)
     print(termcol.HEADER + "Shuffling the index of the dataset..."+termcol.ENDC)
     dataset = dataset.sample(frac=1).reset_index(drop=True)
-    if(verbose): print(dataset.head(5), '...')
+    if(verbose): print(dataset.head(5))
 
     # Extracting useful data (X, Y)
     data_lenght = dataset.shape[0]
-    Y = dataset.iloc[:,-1]
-    X = dataset.iloc[0:data_lenght-1]
+    Y = dataset[['Strength']]
+    print(Y)
+    X = dataset.iloc[0:data_lenght-3]
 
     # Separation between train dataset and test dataset with train_frac
-    
     index_separation = int(data_lenght * train_frac)
     Xtrain = X.iloc[:index_separation]
     Ytrain = Y.iloc[:index_separation]
@@ -56,7 +56,8 @@ def prepareValues(train_frac=0.8, verbose=False):
 
 
 X, Y, Xtest, Ytest = prepareValues(verbose=True)
-# Regression = rd.Regression(X,Y,verbose=True)
+print(Y)
+Regression = rd.Regression(X,Y,verbose=True)
 # Regression.train_model()
 
 # print(termcol.WARNING+ "beta :"+ termcol.ENDC)
