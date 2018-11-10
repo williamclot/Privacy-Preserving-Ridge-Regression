@@ -68,7 +68,7 @@ class Regression:
         tbeta = np.transpose(self.beta)
 
         # loop over each contribution, compute performance of our model
-        sse = 0 # Square Sum Error 
+        average_error = 0 # Square Sum Error 
         for i in range(len(Xtest)):
             # Getting a predicted unified value of Y (in log)
             predictedY = np.dot(tbeta, Xtest[i])
@@ -83,11 +83,10 @@ class Regression:
             # print("predicted value : ", float(predictedY))
             # print("real value : ", float(func(Ytest[i])))
 
-            sse += math.sqrt((float(func(Ytest[i])) - float(predictedY))**2)
+            average_error += abs(float(func(Ytest[i])) - float(predictedY))
 
-        sse = sse/Xtest.shape[0]
-        return sse
-
+        average_error = average_error/Xtest.shape[0]
+        return average_error
 
     def uniform(self, frame):
         '''

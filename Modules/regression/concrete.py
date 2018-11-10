@@ -60,6 +60,6 @@ print(Regression.beta)
 # Training the model with X and Y sets
 # -------------------------------------
 print(termcol.OKGREEN+ "Testing the model with the last 20% of the dataset!"+ termcol.ENDC)
-average_error = Regression.test_model(Xtest,Ytest)
+average_error = Regression.test_model(Xtest, Ytest)
 print(termcol.WARNING+ "Average error :"+ termcol.ENDC, average_error)
 print(termcol.WARNING+ "Precision :"+ termcol.ENDC, float(average_error/(Regression.Ymax-Regression.Ymin)))
