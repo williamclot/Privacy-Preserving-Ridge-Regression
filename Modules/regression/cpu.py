@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''Ridge Regression test using Python (pandas & numpy)'''
+'''Ridge Regression on CPU dataset test using Python (pandas & numpy)'''
 
 __author__ = "William CLOT, www.github.com/williamclot; Camille PLAYS, www.github.com/camilleplays"
 __license__ = "MIT"
@@ -21,9 +21,9 @@ def prepareValues(train_frac=0.8, verbose=False):
     Function to prepare the values of the dataset before calling the Regression Class
     '''
     # Opening up the dataset using pandas to easily manipulate Dataframe variables
-    print(termcol.HEADER + "Opening up the dataset..."+termcol.ENDC)
-    file = r'../../Datasets/Concrete_Data.xlsx'
-    dataset = pd.read_excel(file)
+    print(termcol.HEADER + "Opening up the CPU dataset..."+termcol.ENDC)
+    file = r'../../Datasets/machine.data'
+    dataset = pd.read_table(file, sep=",")
     if(verbose): print(dataset.head(5))
     
     # Randomizing the rows of the dataset (separation between training a testing dataset)
@@ -33,9 +33,9 @@ def prepareValues(train_frac=0.8, verbose=False):
 
     # Extracting useful data (X, Y)
     data_lenght = dataset.shape[0]
-    Y = dataset[['Strength']]
-    X = dataset.drop(columns=['Strength'])
-    # Separation between train dataset and test dataset with train_frac
+    Y = dataset[['ERP']]
+    X = dataset.drop(columns=['ERP','PRP','vendor name', 'model name'])
+    # # Separation between train dataset and test dataset with train_frac
     index_separation = int(data_lenght * train_frac)
     Xtrain = X.iloc[:index_separation]
     Ytrain = Y.iloc[:index_separation]
@@ -47,18 +47,18 @@ def prepareValues(train_frac=0.8, verbose=False):
 
 # Preparing the values and initiating the regression class
 # ----------------------------------------------------------
-X, Y, Xtest, Ytest = prepareValues(verbose=False)
-Regression = rd.Regression(X, Y, verbose=False, unified=False)
+X, Y, Xtest, Ytest = prepareValues(verbose=True)
+Regression = rd.Regression(X, Y, verbose=True, unified=False)
 
-# Training the model with X and Y sets
-# -------------------------------------
+# # Training the model with X and Y sets
+# # -------------------------------------
 Regression.train_model()
 print(termcol.OKGREEN+ "Training phase of the model finished!"+ termcol.ENDC)
 print(termcol.WARNING+ "Output model of the training (beta) :"+ termcol.ENDC)
 print(Regression.beta)
 
-# Training the model with X and Y sets
-# -------------------------------------
+# # Training the model with X and Y sets
+# # -------------------------------------
 print(termcol.OKGREEN+ "Testing the model with the last 20% of the dataset!"+ termcol.ENDC)
 average_error = Regression.test_model(Xtest, Ytest)
 print(termcol.WARNING+ "Average error :"+ termcol.ENDC, average_error)
