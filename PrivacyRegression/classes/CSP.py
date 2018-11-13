@@ -25,7 +25,7 @@ class CSP:
         # Generate the public and private key used for Paillier encryption and decryption
         self.public_key, self.private_key = paillier.generate_paillier_keypair()
         if (self.verbose):
-            print(tc.OKGREEN+"\t Key pair generated: OK"+tc.ENDC)
+            print(tc.OKGREEN+"\t --> Key pair generated: OK"+tc.ENDC)
 
 
     def decrypt(self, c):

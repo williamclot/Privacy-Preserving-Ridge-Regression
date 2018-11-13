@@ -24,41 +24,31 @@ class Users:
         if (self.verbose):
             print(tc.WARNING+"Initiating the Users..."+tc.ENDC)
 
-
-        # turn the database into an array
+        # Turn the pandas dataframes into an array
         Xlist = X.values
         Ylist = Y.values
 
         #initialise the list of (Ai,bi) of all users 
-        
         self.c = []
 
-
-        def encrypt(A,b):
-
-            func = lambda h: self.public_key.encrypt(h)
-            vfunc = np.vectorize(func)
-            return [vfunc(A),vfunc(b)]
-
-            
-
-
-        for users in range(len(X)):
-            x = np.array(Xlist[users])[np.newaxis]
+        for i in range(len(X)):
+            x = np.array(Xlist[i])[np.newaxis]
+            #be careful, our x is the x.T in the paper
             x = x.T
-            y = float(Ylist[users][0])
+            y = float(Ylist[i][0])
 
-            #be careful, our x is the xt in the paper
             a = np.dot(x,x.T)
             b = np.dot(y,x)
 
-            self.c.append(encrypt(a,b))
+            # append the contribution list, each element of c is [enc(Ai), enc(bi)]
+            self.c.append(self.encrypt(a,b))
 
-        
-       
-        # print(self.Ai)
-        # print(self.bi)  
-        #self.c.append([[self.public_key.encrypt(xi) for xi in self.Ai],[self.public_key.encrypt(yi) for yi in self.bi]])
+    def encrypt(self, A, b):
+        '''return c = Cpkcsp(A, b)'''
+        encrypt_func = lambda plain_text: self.public_key.encrypt(plain_text)
+        vector_func = np.vectorize(encrypt_func)
+
+        return [vector_func(A), vector_func(b)]
 
             
     

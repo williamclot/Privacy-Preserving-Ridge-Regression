@@ -65,7 +65,7 @@ CSP_Key = CSP.public_key #Getting the generated public key
 
 Users = Users.Users(CSP_Key, Xtrain, Ytrain, verbose=VERBOSE)
 c = Users.c
-print(c[0])
+print(len(c))
 # c_decrypted = CSP.decrypt(c)
 # print(c_decrypted)
 Evaluator = Evaluator.Evaluator(CSP_Key, verbose=VERBOSE)
