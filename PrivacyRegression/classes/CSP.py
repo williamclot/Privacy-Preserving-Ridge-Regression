@@ -23,11 +23,18 @@ class CSP:
             print(tc.WARNING+"Initiating the CSP..."+tc.ENDC)
 
         # Generate the public and private key used for Paillier encryption and decryption
-        self.public_key, private_key = paillier.generate_paillier_keypair()
+        self.public_key, self.private_key = paillier.generate_paillier_keypair()
         if (self.verbose):
             print(tc.OKGREEN+"\t Key pair generated: OK"+tc.ENDC)
 
 
+    def decrypt(self, c):
+        c_decrypted = []
+        for i in len(c):
+            c_decrypted.append([self.private_key.decrypt(c[i][0]),self.private_key.decrypt(c[i][1])])
+
+
+        return c_decrypted
 
 
 
