@@ -21,9 +21,15 @@ class CSP:
 
         if (self.verbose):
             print(tc.WARNING+"Initiating the CSP..."+tc.ENDC)
-
+            
         # Generate the public and private key used for Paillier encryption and decryption
-        self.public_key, private_key = paillier.generate_paillier_keypair() 
+        self.public_key, private_key = paillier.generate_paillier_keypair()
+        if (self.verbose):
+            print(tc.OKGREEN+"\t Key pair generated: OK"+tc.ENDC)
+
+
+
+
 
 
 

@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 
 '''Privacy Preserving Ridge Regression'''
@@ -15,16 +14,21 @@ import sys
 # System import classes folder as well
 sys.path.insert(0,'./classes/')
 
-import Evalutator
+import Evaluator
 import Users
 import CSP
 
 from termcol import termcol as tc
 
-##--------* Global 
+##--------* Global variables *----------##
+
+VERBOSE = True
+CSP_Key = ''
 
 ##--------* Initiating the actors *---------##
 
-Evalutator = Evalutator.Evalutator(verbose)
-Users = Users.Users(verbose)
-CSP = CSP.CSP(verbose)
+CSP = CSP.CSP(verbose=VERBOSE)
+CSP_Key = CSP.public_key #Getting the generated public key
+
+Evaluator = Evaluator.Evaluator(CSP_Key, verbose=VERBOSE)
+Users = Users.Users(CSP_Key, verbose=VERBOSE)

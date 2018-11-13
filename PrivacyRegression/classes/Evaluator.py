@@ -11,16 +11,16 @@ from phe import paillier
 import numpy as np
 import math
 
-# Other parties that need to be initiated
-import CSP
-import Users
+# # Other parties that need to be initiated
+# import CSP
+# import Users
 
 from termcol import termcol as tc
 
 ##---------* Functions *----------##
 
 class Evaluator:
-    def __init__(self, verbose=False):
+    def __init__(self, public_key, verbose=False):
         # Programm parameters
         self.verbose = verbose
 
