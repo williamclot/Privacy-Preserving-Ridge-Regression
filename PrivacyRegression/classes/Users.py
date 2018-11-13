@@ -16,13 +16,22 @@ from termcol import termcol as tc
 ##---------* Functions *----------##
 
 class Users:
-    def __init__(self, public_key, verbose=False):
+    def __init__(self, public_key, X, Y, verbose=False):
         # Programm parameters
         self.verbose = verbose
         self.public_key = public_key
 
         if (self.verbose):
             print(tc.WARNING+"Initiating the Users..."+tc.ENDC)
+
+
+
+        X = X.values
+        print(X)
+        Y = Y.values
+        # for   
+        #     X[i][j]*X
+       
 
 
 
