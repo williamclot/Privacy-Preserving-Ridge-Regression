@@ -4,15 +4,18 @@
 
 __author__ = "William CLOT, www.github.com/williamclot; Camille PLAYS, www.github.com/camilleplays"
 __license__ = "MIT"
-__date__ = "22/10/2018"
+__date__ = "12/11/2018"
 
 import pandas as pd
 import numpy as np
 import math
+import sys
+
+# System import classes folder as well
+sys.path.insert(0,'./classes/')
 
 import Regression as rd
-
-from termcol import termcol
+from termcol import termcol as tc
 
 ##--------* Regression *---------##
 
@@ -21,13 +24,13 @@ def prepareValues(train_frac=0.8, verbose=False):
     Function to prepare the values of the dataset before calling the Regression Class
     '''
     # Opening up the dataset using pandas to easily manipulate Dataframe variables
-    print(termcol.HEADER + "Opening up the dataset..."+termcol.ENDC)
+    print(tc.HEADER + "Opening up the dataset..."+tc.ENDC)
     file = r'../../Datasets/Concrete_Data.xlsx'
     dataset = pd.read_excel(file)
     if(verbose): print(dataset.head(5))
     
     # Randomizing the rows of the dataset (separation between training a testing dataset)
-    print(termcol.HEADER + "Shuffling the index of the dataset..."+termcol.ENDC)
+    print(tc.HEADER + "Shuffling the index of the dataset..."+tc.ENDC)
     dataset = dataset.sample(frac=1).reset_index(drop=True)
     if(verbose): print(dataset.head(5))
 
@@ -53,15 +56,15 @@ Regression = rd.Regression(X, Y, verbose=False, unified=False)
 # Training the model with X and Y sets
 # -------------------------------------
 Regression.train_model()
-print(termcol.OKGREEN+ "Training phase of the model finished!"+ termcol.ENDC)
-print(termcol.WARNING+ "Output model of the training (beta) :"+ termcol.ENDC)
+print(tc.OKGREEN+ "Training phase of the model finished!"+ tc.ENDC)
+print(tc.WARNING+ "Output model of the training (beta) :"+ tc.ENDC)
 print(Regression.beta)
 
 # Training the model with X and Y sets
 # -------------------------------------
-print(termcol.OKGREEN+ "Testing the model with the last 20% of the dataset!"+ termcol.ENDC)
+print(tc.OKGREEN+ "Testing the model with the last 20% of the dataset!"+ tc.ENDC)
 average_error = Regression.test_model(Xtest, Ytest)
-print(termcol.WARNING+ "Average error :"+ termcol.ENDC, average_error)
-print(termcol.WARNING+ "Ymax value :"+ termcol.ENDC, float(Regression.Ymax))
-print(termcol.WARNING+ "Ymin value :"+ termcol.ENDC, float(Regression.Ymin))
-print(termcol.WARNING+ "Precision :"+ termcol.ENDC, float(average_error/(Regression.Ymax-Regression.Ymin)))
+print(tc.WARNING+ "Average error :"+ tc.ENDC, average_error)
+print(tc.WARNING+ "Ymax value :"+ tc.ENDC, float(Regression.Ymax))
+print(tc.WARNING+ "Ymin value :"+ tc.ENDC, float(Regression.Ymin))
+print(tc.WARNING+ "Precision :"+ tc.ENDC, float(average_error/(Regression.Ymax-Regression.Ymin)))

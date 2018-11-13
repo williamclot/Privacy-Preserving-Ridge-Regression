@@ -9,7 +9,7 @@ __date__ = "22/10/2018"
 import pandas as pd
 import numpy as np
 import math
-from termcol import termcol
+from termcol import termcol as tc
 
 ##---------* Functions *----------##
 
@@ -28,9 +28,9 @@ class Regression:
         self.beta = []
 
         if(verbose):
-            print(termcol.HEADER + "Output Y :"+termcol.ENDC)
+            print(tc.HEADER + "Output Y :"+tc.ENDC)
             print(Y.head(5))
-            print(termcol.HEADER + "Input X :"+termcol.ENDC)
+            print(tc.HEADER + "Input X :"+tc.ENDC)
             print(X.head(5))
 
     def train_model(self):
