@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # ForestFires Dataset
-wget https://archive.ics.uci.edu/ml/machine-learning-databases/forest-fires/forestfires.csv
+wget http://demo.williamclot.com/files/datasets/forestfires.csv
 
 # Concrete Strenght Dataset
-wget https://archive.ics.uci.edu/ml/machine-learning-databases/concrete/compressive/Concrete_Data.xls
+wget http://demo.williamclot.com/files/datasets/Concrete_Data.xlsx
+
+# CPU speed Dataset
+wget http://demo.williamclot.com/files/datasets/machine.data
