@@ -30,5 +30,6 @@ CSP_Key = ''
 CSP = CSP.CSP(verbose=VERBOSE)
 CSP_Key = CSP.public_key #Getting the generated public key
 
-Evaluator = Evaluator.Evaluator(CSP_Key, verbose=VERBOSE)
 Users = Users.Users(CSP_Key, verbose=VERBOSE)
+Evaluator = Evaluator.Evaluator(CSP_Key, verbose=VERBOSE)
+

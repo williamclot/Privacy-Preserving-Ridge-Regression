@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''Ridge Regression test using Python (pandas & numpy)'''
+'''CSP Class for the Privacy Preserving Ridge Regression'''
 
 __author__ = "William CLOT, www.github.com/williamclot; Camille PLAYS, www.github.com/camilleplays"
 __license__ = "MIT"
@@ -21,7 +21,7 @@ class CSP:
 
         if (self.verbose):
             print(tc.WARNING+"Initiating the CSP..."+tc.ENDC)
-            
+
         # Generate the public and private key used for Paillier encryption and decryption
         self.public_key, private_key = paillier.generate_paillier_keypair()
         if (self.verbose):

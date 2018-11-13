@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''Ridge Regression test using Python (pandas & numpy)'''
+'''Users Class for the Privacy Preserving Ridge Regression'''
 
 __author__ = "William CLOT, www.github.com/williamclot; Camille PLAYS, www.github.com/camilleplays"
 __license__ = "MIT"
