@@ -25,11 +25,45 @@ from termcol import termcol as tc
 VERBOSE = True
 CSP_Key = ''
 
+##--------* Initiating the database *---------##
+
+def prepareValues(train_frac=0.8, verbose=False):
+    '''
+    Function to prepare the values of the dataset before calling the Regression Class
+    '''
+    # Opening up the dataset using pandas to easily manipulate Dataframe variables
+    print(tc.HEADER + "Opening up the dataset..."+tc.ENDC)
+    file = r'../Datasets/Concrete_Data.xlsx'
+    dataset = pd.read_excel(file)
+    if(verbose): print(dataset.head(5))
+    
+    # Randomizing the rows of the dataset (separation between training a testing dataset)
+    print(tc.HEADER + "Shuffling the index of the dataset..."+tc.ENDC)
+    dataset = dataset.sample(frac=1).reset_index(drop=True)
+    if(verbose): print(dataset.head(5))
+
+    # Extracting useful data (X, Y)
+    data_lenght = dataset.shape[0]
+    Y = dataset[['Strength']]
+    X = dataset.drop(columns=['Strength'])
+    # Separation between train dataset and test dataset with train_frac
+    index_separation = int(data_lenght * train_frac)
+    Xtrain = X.iloc[:index_separation]
+    Ytrain = Y.iloc[:index_separation]
+    Xtest = X.iloc[index_separation:]
+    Ytest = Y.iloc[index_separation:]
+
+    return Xtrain, Ytrain, Xtest, Ytest
+
+Xtrain, Ytrain, Xtest, Ytest = prepareValues()
+
+
 ##--------* Initiating the actors *---------##
 
 CSP = CSP.CSP(verbose=VERBOSE)
 CSP_Key = CSP.public_key #Getting the generated public key
 
-Users = Users.Users(CSP_Key, verbose=VERBOSE)
+Users = Users.Users(CSP_Key, Xtrain, Ytrain, verbose=VERBOSE)
 Evaluator = Evaluator.Evaluator(CSP_Key, verbose=VERBOSE)
 
+##--------* Initiating the actors *---------##

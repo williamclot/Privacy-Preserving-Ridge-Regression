@@ -29,6 +29,7 @@ def prepareValues(train_frac=0.8, verbose=False):
     dataset = pd.read_csv("../../datasets/forestfires.csv")
     if(verbose): print(dataset.head(5), '...')
     
+>>>>>>> a898597ba04b5bf3b0fc4c3f821cf63afd7179f7
     # Randomizing the rows of the dataset (separation between training a testing dataset)
     print(tc.HEADER + "Shuffling the index of the dataset..."+tc.ENDC)
     dataset = dataset.sample(frac=1).reset_index(drop=True)
