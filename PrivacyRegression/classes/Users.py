@@ -30,20 +30,32 @@ class Users:
         Ylist = Y.values
 
         #initialise the list of (Ai,bi) of all users 
-        self.Ai = []
-        self.bi = []
+        
         self.c = []
 
+
+        def encrypt(A,b):
+
+            func = lambda h: self.public_key.encrypt(h)
+            vfunc = np.vectorize(func)
+            return [vfunc(A),vfunc(b)]
+
+            
+
+
         for users in range(len(X)):
-            x = list(Xlist[users])
-            print(x)
-            xt = np.transpose(x)
-            print(xt)
-            y = Ylist[users]
-            #self.Ai.append(np.dot(x,xt))
-            # print(self.Ai)
-            #self.bi.append(np.dot(y,x))
-            # print(self.bi)
+            x = np.array(Xlist[users])[np.newaxis]
+            x = x.T
+            y = float(Ylist[users][0])
+
+            #be careful, our x is the xt in the paper
+            a = np.dot(x,x.T)
+            b = np.dot(y,x)
+
+            self.c.append(encrypt(a,b))
+
+        
+       
         # print(self.Ai)
         # print(self.bi)  
         #self.c.append([[self.public_key.encrypt(xi) for xi in self.Ai],[self.public_key.encrypt(yi) for yi in self.bi]])
