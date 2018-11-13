@@ -19,22 +19,22 @@ class CSP:
         # Programm parameters
         self.verbose = verbose
 
-        if (self.verbose):
-            print(tc.WARNING+"Initiating the CSP..."+tc.ENDC)
+        if (self.verbose): print(tc.WARNING+"Initiating the CSP..."+tc.ENDC)
 
         # Generate the public and private key used for Paillier encryption and decryption
         self.public_key, self.private_key = paillier.generate_paillier_keypair()
-        if (self.verbose):
-            print(tc.OKGREEN+"\t --> Key pair generated: OK"+tc.ENDC)
+        if (self.verbose): print(tc.OKGREEN+"\t --> Key pair generated: OK"+tc.ENDC)
 
 
     def decrypt(self, c):
-        c_decrypted = []
-        for i in len(c):
-            c_decrypted.append([self.private_key.decrypt(c[i][0]),self.private_key.decrypt(c[i][1])])
+        decrypt_func = lambda cipher_text: self.private_key.decrypt(cipher_text)
+        vector_func = np.vectorize(decrypt_func)
 
+        d = []
+        for element in c:
+            d.append([vector_func(element[0]), vector_func(element[1])])
 
-        return c_decrypted
+        return d
 
 
 

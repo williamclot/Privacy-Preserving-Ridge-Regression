@@ -42,6 +42,9 @@ class Users:
 
             # append the contribution list, each element of c is [enc(Ai), enc(bi)]
             self.c.append(self.encrypt(a,b))
+        
+        if (self.verbose): print(tc.OKGREEN+"\t --> Users have encrypted their contribution with CSP's public key : OK"+tc.ENDC)
+
 
     def encrypt(self, A, b):
         '''return c = Cpkcsp(A, b)'''

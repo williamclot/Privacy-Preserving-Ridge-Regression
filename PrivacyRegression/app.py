@@ -27,7 +27,7 @@ CSP_Key = ''
 
 ##--------* Initiating the database *---------##
 
-def prepareValues(train_frac=0.01, verbose=False):
+def prepareValues(train_frac=0.002, verbose=False):
     '''
     Function to prepare the values of the dataset before calling the Regression Class
     '''
@@ -65,9 +65,9 @@ CSP_Key = CSP.public_key #Getting the generated public key
 
 Users = Users.Users(CSP_Key, Xtrain, Ytrain, verbose=VERBOSE)
 c = Users.c
-print(len(c))
-# c_decrypted = CSP.decrypt(c)
-# print(c_decrypted)
+
+c_decrypted = CSP.decrypt(c)
+print(c_decrypted)
 Evaluator = Evaluator.Evaluator(CSP_Key, verbose=VERBOSE)
 
 
