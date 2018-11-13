@@ -25,12 +25,37 @@ class Users:
             print(tc.WARNING+"Initiating the Users..."+tc.ENDC)
 
 
+        # turn the database into an array
+        Xlist = X.values
+        Ylist = Y.values
 
-        X = X.values
-        print(X)
-        Y = Y.values
-        # for   
-        #     X[i][j]*X
+        #initialise the list of (Ai,bi) of all users 
+        self.Ai = []
+        self.bi = []
+        self.c = []
+
+        for users in range(len(X)):
+            x = list(Xlist[users])
+            print(x)
+            xt = np.transpose(x)
+            print(xt)
+            y = Ylist[users]
+            #self.Ai.append(np.dot(x,xt))
+            # print(self.Ai)
+            #self.bi.append(np.dot(y,x))
+            # print(self.bi)
+        # print(self.Ai)
+        # print(self.bi)  
+        #self.c.append([[self.public_key.encrypt(xi) for xi in self.Ai],[self.public_key.encrypt(yi) for yi in self.bi]])
+
+            
+    
+
+
+
+        
+
+            
        
 
 
