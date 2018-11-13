@@ -24,6 +24,7 @@ from termcol import termcol as tc
 
 VERBOSE = True
 CSP_Key = ''
+LAMBDA = 0.1
 
 ##--------* Initiating the database *---------##
 
@@ -64,10 +65,6 @@ CSP = CSP.CSP(verbose=VERBOSE)
 CSP_Key = CSP.public_key #Getting the generated public key
 
 Users = Users.Users(CSP_Key, Xtrain, Ytrain, verbose=VERBOSE)
-c = Users.c
-
-c_decrypted = CSP.decrypt(c)
-print(c_decrypted)
-Evaluator = Evaluator.Evaluator(CSP_Key, verbose=VERBOSE)
+Evaluator = Evaluator.Evaluator(CSP_Key, Users.c, LAMBDA, verbose=VERBOSE)
 
 
