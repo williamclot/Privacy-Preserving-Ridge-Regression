@@ -40,7 +40,12 @@ class Evaluator:
         self.A_enc += clambda
 
         #apply the masks μA and μb on A and b
-        Atild, btild = self.random_mask(self.A_enc,self.b_enc)
+        self.muA , self.mub = self.getMuA_Mub(self.A_enc,self.b_enc)
+        self.muA_enc , self.mub_enc = self.encrypt(self.muA) , self.encrypt(self.mub)
+        self.Atild , self.btild= self.A_enc + self.muA_enc , self.b_enc + self.mub_enc
+        print(self.Atild, self.btild)
+
+        
 
     def encrypt(self, A):
         '''return c = Cpkcsp(A)'''
@@ -48,10 +53,11 @@ class Evaluator:
         vector_func = np.vectorize(encrypt_func)
         return vector_func(A)
 
-    def random_mask(self, A_enc, b_enc):
+    def getMuA_Mub(self, A_enc, b_enc):
         '''return E(A+μA), E(b+μb)'''
-        mask_add = lambda val: val + self.public_key.encrypt(random.random()*10000)
-        vector_func = np.vectorize(mask_add)
-        return vector_func(A_enc),vector_func(b_enc)
+        muA , mub = np.zeros((len(A_enc),len(A_enc[0]))) , np.zeros((len(b_enc),len(b_enc[0])))
+        add_rand = lambda val: val + random.random()*10000
+        vector_func = np.vectorize(add_rand)
+        return vector_func(muA),vector_func(mub)
 
         
