@@ -1,8 +1,6 @@
 # datasets
-/Datasets/*.csv
-/Datasets/*.names
-/Datasets/*.xlsx
-/Datasets/*.xls
+/Datasets/*
+!/Datasets/getDatasets.sh
 
 # production
 /.vscode
