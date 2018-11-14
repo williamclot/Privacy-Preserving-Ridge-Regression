@@ -37,8 +37,7 @@ class Evaluator:
 
         # clambda
         clambda = self.encrypt(np.eye(len(self.A_enc))*lamb)
-        #self.A_enc += clambda
-        self.A_enc = np.dot(self.A_enc,clambda)
+        self.A_enc += clambda
 
         #apply the masks μA and μb on A and b
         Atild, btild = self.random_mask(self.A_enc,self.b_enc)
