@@ -12,6 +12,7 @@ import numpy as np
 import math
 
 from termcol import termcol as tc
+from progressbar import ProgressBar
 
 ##---------* Functions *----------##
 
@@ -30,6 +31,8 @@ class Users:
 
         #initialise the list of (Ai,bi) of all users 
         self.c = []
+        # print(len(X))
+        bar = ProgressBar(len(X), title="User's contribution encryption")
 
         for i in range(len(X)):
             x = np.array(Xlist[i])[np.newaxis]
@@ -38,12 +41,11 @@ class Users:
             y = float(Ylist[i][0])
             a = np.dot(x,x.T)
             b = np.dot(y,x)
-            print(a)
-            print(b)
 
+            bar.update()
             # append the contribution list, each element of c is [enc(Ai), enc(bi)]
             self.c.append(self.encrypt(a,b))
-        
+        print('\r')
         if (self.verbose): print(tc.OKGREEN+"\t --> Users have encrypted their contribution with CSP's public key : OK"+tc.ENDC)
 
 

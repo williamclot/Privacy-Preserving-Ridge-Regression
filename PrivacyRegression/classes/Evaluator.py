@@ -25,7 +25,7 @@ class Evaluator:
 
         # Contribution list of users encrypted data with CSP's public key
         self.ci_list = ci_list
-        if (self.verbose): print(tc.OKGREEN+"Receiving the contributions of the users: OK"+tc.ENDC)
+        if (self.verbose): print(tc.OKGREEN+"\t --> Receiving the contributions of the users: OK"+tc.ENDC)
 
         self.A_enc = ci_list[0][0]
         self.b_enc = ci_list[0][1]
