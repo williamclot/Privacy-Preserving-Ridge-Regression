@@ -26,15 +26,11 @@ class CSP:
         if (self.verbose): print(tc.OKGREEN+"\t --> Key pair generated: OK"+tc.ENDC)
 
 
-    def decrypt(self, c):
+    def decrypt(self, A):
         decrypt_func = lambda cipher_text: self.private_key.decrypt(cipher_text)
         vector_func = np.vectorize(decrypt_func)
 
-        d = []
-        for element in c:
-            d.append([vector_func(element[0]), vector_func(element[1])])
-
-        return d
+        return vector_func(A)
 
 
 
