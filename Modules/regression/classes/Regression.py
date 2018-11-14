@@ -24,13 +24,14 @@ class Regression:
         self.Xmin, self.Xmax, self.X = self.uniform(X)
 
         self.lamb = lamb
+        self.A = []
         # Result beta of Regression
         self.beta = []
 
         if(verbose):
-            print(tc.HEADER + "Output Y :"+tc.ENDC)
+            print(tc.HEADER + "  Output Y :"+tc.ENDC)
             print(Y.head(5))
-            print(tc.HEADER + "Input X :"+tc.ENDC)
+            print(tc.HEADER + "  Input X :"+tc.ENDC)
             print(X.head(5))
 
     def train_model(self):
@@ -38,11 +39,11 @@ class Regression:
         Trains model using the training dataset
         '''
         # A and b from X and Y
-        A, Xt = self.getA(self.X, self.lamb)
+        self.A, Xt = self.getA(self.X, self.lamb)
         b = np.dot(Xt, self.Y)
 
         # Cholesky Decomposition
-        L, Lt = self.cholesky0(A)
+        L, Lt = self.cholesky0(self.A)
 
         self.beta = self.back_substitution_upper(Lt, self.back_substitution_lower(L, b))
 

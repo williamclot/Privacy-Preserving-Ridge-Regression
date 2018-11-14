@@ -24,14 +24,14 @@ def prepareValues(train_frac=0.8, verbose=False):
     '''
     Function to prepare the values of the dataset before calling the Regression Class
     '''
+    print(tc.WARNING+ "--> Preparing the dataset for training..."+ tc.ENDC)
     # Opening up the dataset using pandas to easily manipulate Dataframe variables
-    print(tc.HEADER + "Opening up the dataset..."+tc.ENDC)
+    if (verbose): print(tc.HEADER + "  Opening up the dataset..."+tc.ENDC)
     dataset = pd.read_csv("../../datasets/forestfires.csv")
     if(verbose): print(dataset.head(5), '...')
     
->>>>>>> a898597ba04b5bf3b0fc4c3f821cf63afd7179f7
-    # Randomizing the rows of the dataset (separation between training a testing dataset)
-    print(tc.HEADER + "Shuffling the index of the dataset..."+tc.ENDC)
+        # Randomizing the rows of the dataset (separation between training a testing dataset)
+    if (verbose): print(tc.HEADER + "  Shuffling the index of the dataset..."+tc.ENDC)
     dataset = dataset.sample(frac=1).reset_index(drop=True)
     if(verbose): print(dataset.head(5), '...')
 
@@ -58,16 +58,17 @@ Regression = rd.Regression(X, Y, verbose=True, unified=False)
 
 # Training the model with X and Y sets
 # -------------------------------------
+print(tc.WARNING+ "--> Training our regression model..."+ tc.ENDC)
 Regression.train_model()
-print(tc.OKGREEN+ "Training phase of the model finished!"+ tc.ENDC)
-print(tc.WARNING+ "Output model of the training (beta) :"+ tc.ENDC)
+print(tc.OKGREEN+ "  Training phase of the model finished!"+ tc.ENDC)
+print(tc.OKGREEN+ "  Output model of the training (beta) :"+ tc.ENDC)
 print(Regression.beta)
 
 # Training the model with X and Y sets
 # -------------------------------------
-print(tc.OKGREEN+ "Testing the model with the last 20% of the dataset!"+ tc.ENDC)
+print(tc.WARNING+ "--> Testing the model with the last 20% of the dataset!"+ tc.ENDC)
 average_error = Regression.test_model(Xtest, Ytest, func = lambda x: np.exp(x)-1)
-print(tc.WARNING+ "Average error :"+ tc.ENDC, average_error)
-print(tc.WARNING+ "Ymax value :"+ tc.ENDC, float(Regression.Ymax))
-print(tc.WARNING+ "Ymin value :"+ tc.ENDC, float(Regression.Ymin))
-print(tc.WARNING+ "Precision :"+ tc.ENDC, float(average_error/(Regression.Ymax-Regression.Ymin)))
+print(tc.OKGREEN+ "  Average error :"+ tc.ENDC, average_error)
+print(tc.OKGREEN+ "  Ymax value :"+ tc.ENDC, float(Regression.Ymax))
+print(tc.OKGREEN+ "  Ymin value :"+ tc.ENDC, float(Regression.Ymin))
+print(tc.OKGREEN+ "  Relative error :"+ tc.ENDC, float(average_error/(Regression.Ymax-Regression.Ymin)))
