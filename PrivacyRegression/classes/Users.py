@@ -36,9 +36,10 @@ class Users:
             #be careful, our x is the x.T in the paper
             x = x.T
             y = float(Ylist[i][0])
-
             a = np.dot(x,x.T)
             b = np.dot(y,x)
+            print(a)
+            print(b)
 
             # append the contribution list, each element of c is [enc(Ai), enc(bi)]
             self.c.append(self.encrypt(a,b))

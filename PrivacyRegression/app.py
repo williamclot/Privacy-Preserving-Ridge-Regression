@@ -28,7 +28,7 @@ LAMBDA = 0.1
 
 ##--------* Initiating the database *---------##
 
-def prepareValues(train_frac=0.002, verbose=False):
+def prepareValues(train_frac=0.001, verbose=False):
     '''
     Function to prepare the values of the dataset before calling the Regression Class
     '''

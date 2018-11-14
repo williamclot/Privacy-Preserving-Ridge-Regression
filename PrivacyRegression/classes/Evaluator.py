@@ -10,6 +10,7 @@ import pandas as pd
 from phe import paillier
 import numpy as np
 import math
+import random
 
 from termcol import termcol as tc
 
@@ -36,13 +37,21 @@ class Evaluator:
 
         # clambda
         clambda = self.encrypt(np.eye(len(self.A_enc))*lamb)
-        self.A_enc += clambda
+        #self.A_enc += clambda
+        self.A_enc = np.dot(self.A_enc,clambda)
+
+        #apply the masks μA and μb on A and b
+        Atild, btild = self.random_mask(self.A_enc,self.b_enc)
 
     def encrypt(self, A):
         '''return c = Cpkcsp(A)'''
         encrypt_func = lambda plain_text: self.public_key.encrypt(plain_text)
         vector_func = np.vectorize(encrypt_func)
 
-        return vector_func(A)
+    def random_mask(self, A_enc, b_enc):
+        '''return E(A+μA), E(b+μb)'''
+        mask_add = lambda val: val + self.public_key.encrypt(random.random()*10000)
+        vector_func = np.vectorize(mask_add)
+        return vector_func(A_enc),vector_func(b_enc)
 
         
