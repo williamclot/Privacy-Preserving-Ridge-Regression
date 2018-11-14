@@ -28,7 +28,7 @@ LAMBDA = 0.1
 
 ##--------* Initiating the database *---------##
 
-def prepareValues(train_frac=0.002, verbose=False):
+def prepareValues(train_frac=0.01, verbose=False):
     '''
     Function to prepare the values of the dataset before calling the Regression Class
     '''
@@ -39,9 +39,9 @@ def prepareValues(train_frac=0.002, verbose=False):
     if(verbose): print(dataset.head(5))
     
     # Randomizing the rows of the dataset (separation between training a testing dataset)
-    print(tc.HEADER + "Shuffling the index of the dataset..."+tc.ENDC)
-    dataset = dataset.sample(frac=1).reset_index(drop=True)
-    if(verbose): print(dataset.head(5))
+    # print(tc.HEADER + "Shuffling the index of the dataset..."+tc.ENDC)
+    # dataset = dataset.sample(frac=1).reset_index(drop=True)
+    # if(verbose): print(dataset.head(5))
 
     # Extracting useful data (X, Y)
     data_lenght = dataset.shape[0]
