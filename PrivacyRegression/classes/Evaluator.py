@@ -43,7 +43,6 @@ class Evaluator:
         self.muA , self.mub = self.getMuA_Mub(self.A_enc,self.b_enc)
         self.muA_enc , self.mub_enc = self.encrypt(self.muA) , self.encrypt(self.mub)
         self.Atild , self.btild= self.A_enc + self.muA_enc , self.b_enc + self.mub_enc
-        print(self.Atild, self.btild)
 
         
 
