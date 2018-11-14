@@ -46,6 +46,7 @@ class Evaluator:
         '''return c = Cpkcsp(A)'''
         encrypt_func = lambda plain_text: self.public_key.encrypt(plain_text)
         vector_func = np.vectorize(encrypt_func)
+        return vector_func(A)
 
     def random_mask(self, A_enc, b_enc):
         '''return E(A+μA), E(b+μb)'''
