@@ -61,10 +61,16 @@ Xtrain, Ytrain, Xtest, Ytest = prepareValues()
 
 ##--------* Initiating the actors *---------##
 
+if (VERBOSE): print(tc.WARNING+"Initiating the Privacy Preserving Ridge Regression Programm..."+tc.ENDC)
+
+
 CSP = CSP.CSP(verbose=VERBOSE)
 CSP_Key = CSP.public_key #Getting the generated public key
 
 Users = Users.Users(CSP_Key, Xtrain, Ytrain, verbose=VERBOSE)
 Evaluator = Evaluator.Evaluator(CSP_Key, Users.c, LAMBDA, verbose=VERBOSE)
+A_enc = Evaluator.A_enc
+A_dec = CSP.decrypt(A_enc)
+print(A_dec)
 
 
