@@ -40,9 +40,12 @@ class Evaluator:
         self.A_enc += clambda
 
         #apply the masks μA and μb on A and b
+        # self.muA , self.mub = self.getMuA_Mub(self.A_enc,self.b_enc)
+        # self.muA_enc , self.mub_enc = self.encrypt(self.muA) , self.encrypt(self.mub)
+        # self.Atild , self.btild= self.A_enc + self.muA_enc , self.b_enc + self.mub_enc
+        
         self.muA , self.mub = self.getMuA_Mub(self.A_enc,self.b_enc)
-        self.muA_enc , self.mub_enc = self.encrypt(self.muA) , self.encrypt(self.mub)
-        self.Atild , self.btild= self.A_enc + self.muA_enc , self.b_enc + self.mub_enc
+        self.Atild , self.btild= self.A_enc + self.muA , self.b_enc + self.mub
 
         
 
