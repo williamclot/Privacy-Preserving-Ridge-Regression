@@ -41,7 +41,7 @@
  \brief		This function is used for running a testing environment for solving the
  millionaire's problem
  */
-int32_t test_millionaire_prob_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
+int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
 		uint32_t nvals, uint32_t bitlen, uint32_t nthreads, e_mt_gen_alg mt_alg,
 		e_sharing sharing);
 
@@ -51,7 +51,7 @@ int32_t test_millionaire_prob_circuit(e_role role, const std::string& address, u
  \param		bc	 		boolean circuit object.
  \brief		This function is used to build and solve the millionaire's problem.
  */
-share* BuildMillionaireProbCircuit(share *s_alice, share *s_bob,
+share* BuildAddCircuit(share *s_alice, share *s_bob,
 		BooleanCircuit *bc);
 
 

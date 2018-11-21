@@ -20,7 +20,7 @@
 #include <abycore/circuit/booleancircuits.h>
 #include <abycore/sharing/sharing.h>
 
-int32_t test_millionaire_prob_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
+int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
 		uint32_t nvals, uint32_t bitlen, uint32_t nthreads, e_mt_gen_alg mt_alg,
 		e_sharing sharing) {
 
@@ -62,9 +62,8 @@ int32_t test_millionaire_prob_circuit(e_role role, const std::string& address, u
 	*/
 
 	uint32_t alice_money, bob_money, output;
-	srand(time(NULL));
-	alice_money = rand();
-	bob_money = rand();
+	alice_money = 100;
+	bob_money = 200;
 
 	/**
 		Step 6: Copy the randomly generated money into the respective
@@ -88,7 +87,7 @@ int32_t test_millionaire_prob_circuit(e_role role, const std::string& address, u
 				Don't forget to type cast the circuit object to type of share
 	*/
 
-	s_out = BuildMillionaireProbCircuit(s_alice_money, s_bob_money,
+	s_out = BuildAddCircuit(s_alice_money, s_bob_money,
 			(BooleanCircuit*) circ);
 
 	/**
@@ -121,7 +120,7 @@ int32_t test_millionaire_prob_circuit(e_role role, const std::string& address, u
 	return 0;
 }
 
-share* BuildMillionaireProbCircuit(share *s_alice, share *s_bob,
+share* BuildAddCircuit(share *s_alice, share *s_bob,
 		BooleanCircuit *bc) {
 
 	share* out;
