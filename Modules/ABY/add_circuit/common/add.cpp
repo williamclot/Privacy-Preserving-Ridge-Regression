@@ -87,7 +87,7 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 				Don't forget to type cast the circuit object to type of share
 	*/
 
-	s_out = BuildAddCircuit(s_alice_money, s_bob_money,
+	s_out = BuildAddCircuit(mu_A, mu_B, Amu_A, Bmu_B
 			(BooleanCircuit*) circ);
 
 	/**
