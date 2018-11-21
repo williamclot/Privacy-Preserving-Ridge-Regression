@@ -12,3 +12,4 @@ endif()
 add_executable(add_circuit_test add_circuit_test.cpp common/add_circuit.cpp)
 target_link_libraries(add_circuit_test ABY::aby ENCRYPTO_utils::encrypto_utils)
 
+

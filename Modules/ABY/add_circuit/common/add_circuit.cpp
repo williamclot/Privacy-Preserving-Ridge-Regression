@@ -16,7 +16,7 @@
  \brief		Implementation of the millionaire problem using ABY Framework.
  */
 
-#include "millionaire_prob.h"
+#include "circuit_add.h"
 #include <abycore/circuit/booleancircuits.h>
 #include <abycore/sharing/sharing.h>
 
