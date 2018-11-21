@@ -108,13 +108,10 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 	*/
 	output = s_out->get_clear_value<uint32_t>();
 
-	std::cout << "Testing Millionaire's Problem in " << get_sharing_name(sharing)
-				<< " sharing: " << std::endl;
+	std::cout << "Testing Millionaire's Problem in " << get_sharing_name(sharing) << " sharing: " << std::endl;
 	std::cout << "\nAlice Money:\t" << alice_money;
 	std::cout << "\nBob Money:\t" << bob_money;
-	std::cout << "\nCircuit Result:\t" << (output ? ALICE : BOB);
-	std::cout << "\nVerify Result: \t" << ((alice_money > bob_money) ? ALICE : BOB)
-				<< "\n";
+	std::cout << "\nCircuit Add Result:\t" << output;
 
 	delete party;
 	return 0;
