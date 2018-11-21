@@ -28,11 +28,13 @@ int32_t read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 		uint32_t* bitlen, uint32_t* nvals, uint32_t* secparam, std::string* address,
 		uint16_t* port, int32_t* test_op) {
 
-	uint32_t int_role = 0, int_port = 0;
+	uint32_t int_role = 0, int_port = 0, int_number_alice = 0, int_number_bob = 0;
 	bool useffc = false;
 
 	parsing_ctx options[] =
 			{ { (void*) &int_role, T_NUM, "r", "Role: 0/1", true, false }, {
+					(void*) &int_number_alice, T_NUM, "alice", "Alice's money in Millions", false, false }, {
+					(void*) &int_number_alice, T_NUM, "bob", "Bob's money in Millions", false, false }, {
 					(void*) nvals, T_NUM, "n",
 					"Number of parallel operation elements", false, false }, {
 					(void*) bitlen, T_NUM, "b", "Bit-length, default 32", false,
