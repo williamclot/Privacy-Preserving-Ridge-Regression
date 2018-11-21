@@ -68,8 +68,8 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 	mu_A = 10;
 	mu_B = 20;
 	// CSP inputs
-	Amu_A = 110;
-	Bmu_B = 220;
+	Amu_A = 60;
+	Bmu_B = 80;
 
 	//s_alice_money = circ->PutINGate(alice_money, bitlen, CLIENT);
 	//s_bob_money = circ->PutINGate(bob_money, bitlen, SERVER);
