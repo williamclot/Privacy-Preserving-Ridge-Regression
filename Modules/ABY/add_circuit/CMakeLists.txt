@@ -9,7 +9,7 @@ elseif (NOT ABY_FOUND AND NOT TARGET ABY::aby)
 endif()
 
 
-add_executable(add_circuit_test add_circuit_test.cpp common/add_circuit.cpp)
-target_link_libraries(add_circuit_test ABY::aby ENCRYPTO_utils::encrypto_utils)
+add_executable(add_test add_test.cpp common/add.cpp)
+target_link_libraries(add_test ABY::aby ENCRYPTO_utils::encrypto_utils)
 
 

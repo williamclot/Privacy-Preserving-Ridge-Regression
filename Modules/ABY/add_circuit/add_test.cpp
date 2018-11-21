@@ -1,5 +1,5 @@
 /**
- \file 		millionaire_prob_test.cpp
+ \file 		add_test.cpp
  \author	sreeram.sadasivam@cased.de
  \copyright	ABY - A Framework for Efficient Mixed-protocol Secure Two-party Computation
 			Copyright (C) 2015 Engineering Cryptographic Protocols Group, TU Darmstadt
@@ -22,7 +22,7 @@
 //ABY Party class
 #include <abycore/aby/abyparty.h>
 
-#include "common/add_circuit.h"
+#include "common/add.h"
 
 int32_t read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 		uint32_t* bitlen, uint32_t* nvals, uint32_t* secparam, std::string* address,
