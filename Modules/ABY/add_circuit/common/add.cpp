@@ -87,7 +87,7 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 				Don't forget to type cast the circuit object to type of share
 	*/
 
-	s_out = BuildAddCircuit(mu_A, mu_B, Amu_A, Bmu_B
+	s_out = BuildAddCircuit(s_mu_A, s_mu_B, s_AmuA, s_BmuB,
 			(BooleanCircuit*) circ);
 
 	/**
@@ -113,7 +113,7 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 	std::cout << "\nmu_B:\t" << mu_B;
 	std::cout << "\nA + mu_A:\t" << AmuA;
 	std::cout << "\nB + mu_B:\t" << BmuB;
-	std::cout << "\nResult:\t" << output; << "\n";				
+	std::cout << "\nResult:\t" << output;				
 
 	delete party;
 	return 0;
