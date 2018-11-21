@@ -126,7 +126,7 @@ share* BuildAddCircuit(share *s_alice, share *s_bob,
 	share* out;
 
 	/** Calling the greater than equal function in the Boolean circuit class.*/
-	out = bc->PutGTGate(s_alice, s_bob);
+	out = bc->PutADDGate(s_alice, s_bob);
 
 	return out;
 }
