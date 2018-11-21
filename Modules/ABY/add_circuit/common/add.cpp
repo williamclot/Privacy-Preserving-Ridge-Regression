@@ -65,15 +65,15 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 
 	uint32_t mu_A, mu_B, AmuA, BmuB, output;
 	// Evaluator inputs
-	mu_A = 10
-	mu_B = 20
+	mu_A = 10;
+	mu_B = 20;
 	// CSP inputs
-	Amu_A = 110
-	Bmu_B = 220
+	Amu_A = 110;
+	Bmu_B = 220;
 
 	//s_alice_money = circ->PutINGate(alice_money, bitlen, CLIENT);
 	//s_bob_money = circ->PutINGate(bob_money, bitlen, SERVER);
-	if(role == SERVER) { // role == CSP
+	if(role == SERVER) {
 		s_AmuA = circ->PutINGate(Amu_A, bitlen, SERVER);
 		s_BmuB = circ->PutINGate(Bmu_B, bitlen, SERVER);
 	} else { //role == Evaluator
