@@ -47,12 +47,14 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 
 
 	/**
-		Step 4: Creating the share objects - s_alice_money, s_bob_money which
+		Step 4: Creating the share objects - s_muA, s_muB, s_AmuA, s_BmuB which
 				is used as input to the computation function. Also s_out
 				which stores the output.
+				We have s_AmuA : A + mu_A
+						s_BmuB : b + mu_b
 	*/
 
-	share *s_alice_money, *s_bob_money, *s_out;
+	share *s_mu_A, *s_mu_B, *s_AmuA, *s_BmuB, *s_out;
 
 	/**
 		Step 5: Initialize Alice's and Bob's money with random values.
@@ -61,24 +63,22 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 				one input value.
 	*/
 
-	uint32_t alice_money, bob_money, output;
-	alice_money = 100;
-	bob_money = 200;
+	uint32_t mu_A, mu_B, AmuA, BmuB, output;
+	// Evaluator inputs
+	mu_A = 10
+	mu_B = 20
+	// CSP inputs
+	Amu_A = 110
+	Bmu_B = 220
 
-	/**
-		Step 6: Copy the randomly generated money into the respective
-				share objects using the circuit object method PutINGate()
-				for my inputs and PutDummyINGate() for the other parties input.
-				Also mention who is sharing the object.
-	*/
 	//s_alice_money = circ->PutINGate(alice_money, bitlen, CLIENT);
 	//s_bob_money = circ->PutINGate(bob_money, bitlen, SERVER);
-	if(role == SERVER) {
-		s_alice_money = circ->PutDummyINGate(bitlen);
-		s_bob_money = circ->PutINGate(bob_money, bitlen, SERVER);
-	} else { //role == CLIENT
-		s_alice_money = circ->PutINGate(alice_money, bitlen, CLIENT);
-		s_bob_money = circ->PutDummyINGate(bitlen);
+	if(role == SERVER) { // role == CSP
+		s_AmuA = circ->PutINGate(Amu_A, bitlen, SERVER);
+		s_BmuB = circ->PutINGate(Bmu_B, bitlen, SERVER);
+	} else { //role == Evaluator
+		s_mu_A = circ->PutINGate(mu_A, bitlen, CLIENT);
+		s_mu_B = circ->PutINGate(mu_B, bitlen, CLIENT);
 	}
 
 	/**
@@ -108,22 +108,25 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 	*/
 	output = s_out->get_clear_value<uint32_t>();
 
-	std::cout << "Testing Millionaire's Problem in " << get_sharing_name(sharing) << " sharing: " << std::endl;
-	std::cout << "\nAlice Money:\t" << alice_money;
-	std::cout << "\nBob Money:\t" << bob_money;
-	std::cout << "\nCircuit Add Result:\t" << output;
+	std::cout << "\nTesting A+muA B+muB substraction " << get_sharing_name(sharing) << " sharing: " << std::endl;
+	std::cout << "\nmu_A:\t" << mu_A;
+	std::cout << "\nmu_B:\t" << mu_B;
+	std::cout << "\nA + mu_A:\t" << AmuA;
+	std::cout << "\nB + mu_B:\t" << BmuB;
+	std::cout << "\nResult:\t" << output; << "\n";				
 
 	delete party;
 	return 0;
 }
 
-share* BuildAddCircuit(share *s_alice, share *s_bob,
+share* BuildAddCircuit(share *s_mu_A, share *s_mu_B, share *s_AmuA, share *s_BmuB,
 		BooleanCircuit *bc) {
 
-	share* out;
+	share *outA, *outB;
 
 	/** Calling the greater than equal function in the Boolean circuit class.*/
-	out = bc->PutADDGate(s_alice, s_bob);
+	outA = bc->PutSUBGate(s_AmuA, s_mu_A);
+	outB = bc->PutSUBGate(s_BmuB, s_mu_B);
 
-	return out;
+	return outA;
 }
