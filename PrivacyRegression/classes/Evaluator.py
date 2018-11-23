@@ -33,20 +33,16 @@ class Evaluator:
         # Doing the sum of Ai and bi encrypted with paillier homomorphic encryption
         for i in range(1, len(ci_list)):
             self.A_enc += ci_list[i][0]
-            self.b_enc += ci_list[i][1]
+            self.b_enc += print(self.Atild, self.btild)ci_list[i][1]
 
         # clambda
         clambda = self.encrypt(np.eye(len(self.A_enc))*lamb)
         self.A_enc += clambda
 
         #apply the masks μA and μb on A and b
-        # self.muA , self.mub = self.getMuA_Mub(self.A_enc,self.b_enc)
-        # self.muA_enc , self.mub_enc = self.encrypt(self.muA) , self.encrypt(self.mub)
-        # self.Atild , self.btild= self.A_enc + self.muA_enc , self.b_enc + self.mub_enc
-        
         self.muA , self.mub = self.getMuA_Mub(self.A_enc,self.b_enc)
-        self.Atild , self.btild= self.A_enc + self.muA , self.b_enc + self.mub
-
+        self.muA_enc , self.mub_enc = self.encrypt(self.muA) , self.encrypt(self.mub)
+        self.Atild , self.btild= self.A_enc + self.muA_enc , self.b_enc + self.mub_enc
         
 
     def encrypt(self, A):

@@ -28,7 +28,7 @@ LAMBDA = 0.1
 
 ##--------* Initiating the database *---------##
 
-def prepareValues(train_frac=0.001, verbose=False):
+def prepareValues(train_frac=0.01, verbose=False):
     '''
     Function to prepare the values of the dataset before calling the Regression Class
     '''
@@ -75,7 +75,7 @@ A_dec = CSP.decrypt(A_enc)
 Atild = Evaluator.Atild
 Atild_dec = CSP.decrypt(Atild)
 AmuA = A_dec + Evaluator.muA
-print('decrypted matrx:',Atild_dec)
-print('original matrix', AmuA)
+# print('decrypted matrx:',Atild_dec)
+# print('original matrix', AmuA)
 
 
