@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-
+find_package(Boost REQUIRED COMPONENTS thread system)
 find_package(ABY QUIET)
 if(ABY_FOUND)
 	message(STATUS "Found ABY")
