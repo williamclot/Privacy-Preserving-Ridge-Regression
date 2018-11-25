@@ -56,12 +56,12 @@ def prepareValues(train_frac=0.01, verbose=False):
 
     return Xtrain, Ytrain, Xtest, Ytest
 
-Xtrain, Ytrain, Xtest, Ytest = prepareValues()
+if (VERBOSE): print(tc.WARNING+"Initiating the Privacy Preserving Ridge Regression Programm..."+tc.ENDC)
+
+Xtrain, Ytrain, Xtest, Ytest = prepareValues(verbose=VERBOSE)
 
 
 ##--------* Initiating the actors *---------##
-
-if (VERBOSE): print(tc.WARNING+"Initiating the Privacy Preserving Ridge Regression Programm..."+tc.ENDC)
 
 
 CSP = CSP.CSP(verbose=VERBOSE)
