@@ -19,6 +19,7 @@ cmake_install.cmake
 
 # Binaries
 add_test
+millionaire_prob_test
 
 # Distribution / packaging
 .Python
