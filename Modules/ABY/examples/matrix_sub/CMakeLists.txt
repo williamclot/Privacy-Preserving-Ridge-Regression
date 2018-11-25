@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.10)
+find_package(Boost REQUIRED COMPONENTS thread system)
+find_package(ABY QUIET)
+if(ABY_FOUND)
+	message(STATUS "Found ABY")
+elseif (NOT ABY_FOUND AND NOT TARGET ABY::aby)
+	message("ABY was not found: add ABY subdirectory")
+	add_subdirectory(extern/ABY)
+endif()
+
+add_executable(matrix_sub_test matrix_sub_test.cpp common/matrix_sub.cpp)
+target_link_libraries(matrix_sub_test ABY::aby ENCRYPTO_utils::encrypto_utils)
