@@ -20,6 +20,7 @@ cmake_install.cmake
 # Binaries
 add_test
 millionaire_prob_test
+matrix_sub
 
 # Distribution / packaging
 .Python
