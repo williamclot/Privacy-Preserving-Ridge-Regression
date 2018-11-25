@@ -51,8 +51,7 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
  \param		bc	 		boolean circuit object.
  \brief		This function is used to build and solve the millionaire's problem.
  */
-share* BuildAddCircuit(share *s_alice, share *s_bob,
+share* BuildAddCircuit(share *s_mu_A, share *s_mu_B, share *s_AmuA, share *s_BmuB,
 		BooleanCircuit *bc);
-
 
 #endif /* __MILLIONAIREPROB_H_ */
