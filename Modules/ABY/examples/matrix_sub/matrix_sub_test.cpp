@@ -42,7 +42,7 @@ int32_t read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 int main(int argc, char** argv) {
 
 	e_role role;
-	uint32_t bitlen = 16, nvals = 128, secparam = 128, nthreads = 1;
+	uint32_t bitlen = 16, nvals = 4, secparam = 128, nthreads = 1;
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
 	int32_t test_op = -1;
