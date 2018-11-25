@@ -27,14 +27,12 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 
 
 	/**
-		Step 4: Creating the share objects - s_muA, s_muB, s_AmuA, s_BmuB which
+		Step 4: Creating the share objects - s_A and s_B which
 				is used as input to the computation function. Also s_out
 				which stores the output.
-				We have s_AmuA : A + mu_A
-						s_BmuB : b + mu_b
 	*/
 
-	share *s_mu_A, *s_mu_B, *s_AmuA, *s_BmuB, *s_out;
+	share *s_A, *s_B, *s_out;
 
 	/**
 		Step 5: Initialize Alice's and Bob's money with random values.
@@ -43,22 +41,17 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 				one input value.
 	*/
 
-	uint32_t mu_A, mu_B, AmuA, BmuB, output;
+	uint32_t A, B, output;
 	// Evaluator inputs
-	mu_A = 10;
-	mu_B = 20;
-	// CSP inputs
-	AmuA = 60;
-	BmuB = 80;
+	A = 10;
+	B = 10;
 
-	//s_alice_money = circ->PutINGate(alice_money, bitlen, CLIENT);
-	//s_bob_money = circ->PutINGate(bob_money, bitlen, SERVER);
 	if(role == SERVER) {
-		s_AmuA = circ->PutINGate(AmuA, bitlen, SERVER);
-		s_BmuB = circ->PutINGate(BmuB, bitlen, SERVER);
+		s_A = circ->PutINGate(A, bitlen, SERVER);
+		s_B = circ->PutDummyINGate(bitlen);
 	} else { //role == Evaluator
-		s_mu_A = circ->PutINGate(mu_A, bitlen, CLIENT);
-		s_mu_B = circ->PutINGate(mu_B, bitlen, CLIENT);
+		s_A = circ->PutDummyINGate(bitlen);
+		s_B = circ->PutINGate(B, bitlen, CLIENT);
 	}
 
 	/**
@@ -67,8 +60,7 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 				Don't forget to type cast the circuit object to type of share
 	*/
 
-	s_out = BuildAddCircuit(s_mu_A, s_mu_B, s_AmuA, s_BmuB,
-			(BooleanCircuit*) circ);
+	s_out = BuildAddCircuit(s_A, s_B, (BooleanCircuit*) circ);
 
 	/**
 		Step 8: Modify the output receiver based on the role played by
@@ -88,25 +80,21 @@ int32_t test_add_circuit(e_role role, const std::string& address, uint16_t port,
 	*/
 	output = s_out->get_clear_value<uint32_t>();
 
-	std::cout << "\nTesting A+muA B+muB substraction " << get_sharing_name(sharing) << " sharing: " << std::endl;
-	std::cout << "\nmu_A:\t" << mu_A;
-	std::cout << "\nmu_B:\t" << mu_B;
-	std::cout << "\nA + mu_A:\t" << AmuA;
-	std::cout << "\nB + mu_B:\t" << BmuB;
-	std::cout << "\nResult:\t" << output;				
+	std::cout << "\nTesting A+B addition " << get_sharing_name(sharing) << " sharing: " << std::endl;
+	std::cout << "\nA:\t" << A;
+	std::cout << "\nB:\t" << B;
+	std::cout << "\nA + B:\t" << output << std::endl;
 
 	delete party;
 	return 0;
 }
 
-share* BuildAddCircuit(share *s_mu_A, share *s_mu_B, share *s_AmuA, share *s_BmuB,
-		BooleanCircuit *bc) {
+share* BuildAddCircuit(share *s_A, share *s_B, BooleanCircuit *bc) {
 
-	share *outA, *outB;
+	share *out;
 
 	/** Calling the greater than equal function in the Boolean circuit class.*/
-	outA = bc->PutSUBGate(s_AmuA, s_mu_A);
-	outB = bc->PutSUBGate(s_BmuB, s_mu_B);
+	out = bc->PutADDGate(s_A, s_B);
 
-	return outA;
+	return out;
 }

@@ -42,8 +42,7 @@ int32_t read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 				{ (void*) test_op, T_NUM, "t", "Single test (leave out for all operations), default: off", false, false }
 			};
 
-	if (!parse_options(argcp, argvp, options,
-			sizeof(options) / sizeof(parsing_ctx))) {
+	if (!parse_options(argcp, argvp, options, sizeof(options) / sizeof(parsing_ctx))) {
 		print_usage(*argvp[0], options, sizeof(options) / sizeof(parsing_ctx));
 		std::cout << "Exiting" << std::endl;
 		exit(0);
@@ -70,14 +69,12 @@ int main(int argc, char** argv) {
 	int32_t test_op = -1;
 	e_mt_gen_alg mt_alg = MT_OT;
 
-	read_test_options(&argc, &argv, &role, &bitlen, &nvals, &secparam, &address,
-			&port, &test_op);
+	read_test_options(&argc, &argv, &role, &bitlen, &nvals, &secparam, &address, &port, &test_op);
 
 	seclvl seclvl = get_sec_lvl(secparam);
 
-	//evaluate the millionaires circuit using Yao
-	test_add_circuit(role, address, port, seclvl, 1, 32,
-			nthreads, mt_alg, S_YAO);
+	//evaluate the circuit using Yao
+	test_add_circuit(role, address, port, seclvl, 1, 32, nthreads, mt_alg, S_YAO);
 
 	return 0;
 }
