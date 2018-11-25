@@ -11,7 +11,7 @@ RUN apt-get install -q -y cmake
 RUN apt-get install -q -y libgmp-dev
 RUN apt-get install -q -y libssl-dev
 RUN apt-get install -q -y libboost-all-dev
-RUN apt-get install -q -y tmux:
+RUN apt-get install -q -y tmux
 
 # Git & ABY
 RUN apt-get install -q -y git
