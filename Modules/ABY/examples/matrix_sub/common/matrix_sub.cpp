@@ -56,8 +56,8 @@ int32_t test_matrix_sub_circuit(e_role role, const std::string& address, uint16_
 	 */
 	for (i = 0; i < num; i++) {
 
-		x = 10;
-		y = 4;
+		x = i+5;
+		y = i;
 
 		xvals[i] = x;
 		yvals[i] = y;
@@ -90,32 +90,45 @@ int32_t test_matrix_sub_circuit(e_role role, const std::string& address, uint16_
 	 */
 	s_out->get_clear_value_vec(&out_vals, &out_bitlen, &out_nvals);
 
-	for (int i = num - 1; i >= 0; i--){
-		if (i == num -1){
+	std::cout << "A vector: \n";
+	for (int i = 0; i < num; i++){
+		if (i == 0){
 			std::cout << "[";
 		}
     	std::cout << xvals[i];
-		if (i == 0){
-			std::cout << "]";
+		if (i == num - 1){
+			std::cout << "]\n";
 		} else {
 			std::cout << ",";
 		}
 	}
-
-	for (int i = num - 1; i >= 0; i--){
-		if (i == num -1){
+		
+	std::cout << "B vector: \n";
+	for (int i = 0; i < num; i++){
+		if (i == 0){
 			std::cout << "[";
 		}
     	std::cout << yvals[i];
-		if (i == 0){
+		if (i == num - 1){
 			std::cout << "]";
 		} else {
 			std::cout << ",";
 		}
 	}
 
-	std::cout << "\nCircuit Result: " << out_vals[1] << std::endl;
-
+	std::cout << "\nCircuit Result: \n";
+	for (int i = 0; i < num; i++){
+		if (i == 0){
+			std::cout << "[";
+		}
+    	std::cout << out_vals[i];
+		if (i == num - 1){
+			std::cout << "]";
+		} else {
+			std::cout << ",";
+		}
+	}
+	std::cout << '\n';
 	delete s_x_vec;
 	delete s_y_vec;
 	delete party;
@@ -130,14 +143,16 @@ share* BuildMatrixSubCircuit(share *s_x, share *s_y, uint32_t num, ArithmeticCir
 	uint32_t i;
 
 	// split SIMD gate to separate wires (size many)
-	s_x = ac->PutSplitterGate(s_x);
-	s_y = ac->PutSplitterGate(s_y);
+	// s_x = ac->PutSplitterGate(s_x);
+	// s_y = ac->PutSplitterGate(s_y);
 
-	// add up the individual multiplication results and store result on wire 0
-	// in arithmetic sharing ADD is for free, and does not add circuit depth, thus simple sequential adding
-	for (i = 1; i < num; i++) {
-		s_x->set_wire_id(i, ac->PutSUBGate(s_x->get_wire_id(i), s_y->get_wire_id(i)));
-	}
+	// // add up the individual multiplication results and store result on wire 0
+	// // in arithmetic sharing ADD is for free, and does not add circuit depth, thus simple sequential adding
+	// for (i = 0; i < num; i++) {
+	// 	s_x->set_wire_id(i, ac->PutSUBGate(s_x->get_wire_id(i), s_y->get_wire_id(i)));
+	// }
+	
+	s_x = ac->PutSUBGate(s_x, s_y);
 
 	return s_x;
 }

@@ -42,7 +42,7 @@ int32_t read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 int main(int argc, char** argv) {
 
 	e_role role;
-	uint32_t bitlen = 16, nvals = 4, secparam = 128, nthreads = 1;
+	uint32_t bitlen = 16, nvals = 10, secparam = 128, nthreads = 1;
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
 	int32_t test_op = -1;
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 	seclvl seclvl = get_sec_lvl(secparam);
 
 	// call inner product routine. set size with cmd-parameter -n <size>
-	test_matrix_sub_circuit(role, address, port, seclvl, 1, 16, nthreads, mt_alg, S_ARITH, nvals);
+	test_matrix_sub_circuit(role, address, port, seclvl, 1, 16, nthreads, mt_alg, S_YAO, nvals);
 
 	return 0;
 }
