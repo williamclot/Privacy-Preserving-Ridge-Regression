@@ -8,5 +8,5 @@ elseif (NOT ABY_FOUND AND NOT TARGET ABY::aby)
 	add_subdirectory(extern/ABY)
 endif()
 
-add_executable(matrix_sub_test matrix_sub_test.cpp common/matrix_sub.cpp)
+add_executable(matrix_sub_test matrix_sub_test.cpp common/matrix_sub.cpp common/utils.cpp)
 target_link_libraries(matrix_sub_test ABY::aby ENCRYPTO_utils::encrypto_utils)

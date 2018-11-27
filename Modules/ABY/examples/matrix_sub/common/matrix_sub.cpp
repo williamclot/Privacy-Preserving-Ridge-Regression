@@ -1,5 +1,7 @@
 #include "matrix_sub.h"
+#include "utils.h"
 #include <abycore/sharing/sharing.h>
+#include <vector>
 
 int32_t test_matrix_sub_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
 		uint32_t nvals, uint32_t bitlen, uint32_t nthreads, e_mt_gen_alg mt_alg,
@@ -90,33 +92,13 @@ int32_t test_matrix_sub_circuit(e_role role, const std::string& address, uint16_
 	 */
 	s_out->get_clear_value_vec(&out_vals, &out_bitlen, &out_nvals);
 
-	std::cout << "A vector: \n";
-	for (int i = 0; i < num; i++){
-		if (i == 0){
-			std::cout << "[";
-		}
-    	std::cout << xvals[i];
-		if (i == num - 1){
-			std::cout << "]\n";
-		} else {
-			std::cout << ",";
-		}
-	}
-		
-	std::cout << "B vector: \n";
-	for (int i = 0; i < num; i++){
-		if (i == 0){
-			std::cout << "[";
-		}
-    	std::cout << yvals[i];
-		if (i == num - 1){
-			std::cout << "]";
-		} else {
-			std::cout << ",";
-		}
-	}
+	std::string name = "A";
+	printVector(xvals, num, name);
 
-	std::cout << "\nCircuit Result: \n";
+	name = "B";
+	printVector(yvals, num, name);
+
+	std::cout << "\nCircuit Result A - B: \n";
 	for (int i = 0; i < num; i++){
 		if (i == 0){
 			std::cout << "[";
