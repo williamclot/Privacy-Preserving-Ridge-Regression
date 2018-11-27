@@ -135,12 +135,17 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	 problem by passing the shared objects and circuit object.
 	 Don't forget to type cast the circuit object to type of share
 	 */
+
 	s_out = BuildAddCircuit(s_x_vec, s_y_vec, num,
 			(ArithmeticCircuit*) circ);
 	/**
 	 Step 8: Output the value of s_out (the computation result) to both parties
 	 */
-	s_out = circ->PutOUTGate(s_out, ALL);
+	s_out2 = BuildSubCircuit(s_out, s_y_vec, num,
+			(ArithmeticCircuit*) circ);
+
+	s_out2 = circ->PutOUTGate(s_out2, ALL);
+
 	/**
 	 Step 9: Executing the circuit using the ABYParty object evaluate the
 	 problem.
@@ -151,27 +156,27 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	 */
 
 	//s_out_share = share* PutSharedINGate(share* s_out)
-	//s_out->get_clear_value_vec(&output, &outbitlength, &outnvals);
+	s_out2->get_clear_value_vec(&output, &outbitlength, &outnvals);
 
 	
 
 
 
-	// for(int i=0; i<num; i++){
+	for(int i=0; i<num; i++){
 
-	// 	if (i==0){
-	// 		std::cout << "[" << output[i];
-	// 	}
+		if (i==0){
+			std::cout << "[" << output[i];
+		}
 
-	// 	else if (i == num-1){
-	// 		std::cout << "," << output[i] << "] \n";
-	// 	}
+		else if (i == num-1){
+			std::cout << "," << output[i] << "] \n";
+		}
 
-	// 	else{
-	// 		std::cout << "," << output[i];
+		else{
+			std::cout << "," << output[i];
 
-	// 	}
-	// }
+		}
+	}
 
 
 
@@ -179,42 +184,24 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 // new circuit
 
 
-	party ->Reset();
+	// party ->Reset();
 
 
-	s_out_vec = circ->PutSIMDINGate(num, PutSharedINGate(s_out), 16, SERVER);
-	s_x_vec = circ->PutSIMDINGate(num, xvals.data(), 8, CLIENT);
+	// s_out_vec = circ->PutSIMDINGate(num, PutSharedINGate(s_out), 16, SERVER);
+	// s_x_vec = circ->PutSIMDINGate(num, xvals.data(), 8, CLIENT);
 
-	// new substraction circuit
+	// // new substraction circuit
 
-	s_out2 = BuildSubCircuit(s_out_vec, s_y_vec, num,
-			(ArithmeticCircuit*) circ);
+	// s_out2 = BuildSubCircuit(s_out_vec, s_y_vec, num,
+	// 		(ArithmeticCircuit*) circ);
 
-	s_out2 = circ->PutOUTGate(s_out2, ALL);
+	// s_out2 = circ->PutOUTGate(s_out2, ALL);
 
-	party->ExecCircuit();
+	// party->ExecCircuit();
 
-	s_out2->get_clear_value_vec(&output2, &outbitlength, &outnvals);
+	// s_out2->get_clear_value_vec(&output2, &outbitlength, &outnvals);
 
-	//s_out->PutCombinerGate(s_res);
-
-
-
-	for(int i=0; i<num; i++){
-
-		if (i==0){
-			std::cout << "[" << output2[i];
-		}
-
-		else if (i == num-1){
-			std::cout << "," << output2[i] << "] \n";
-		}
-
-		else{
-			std::cout << "," << output2[i];
-
-		}
-	}
+	// //s_out->PutCombinerGate(s_res);
 	//std::cout << "\nCircuit Result: " << output2;
 
 
