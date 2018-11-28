@@ -18,6 +18,7 @@
 
 #include "my_prog.h"
 #include <abycore/sharing/sharing.h>
+#include <abycore/circuit/booleancircuits.h>
 
 int32_t test_inner_product_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
 		uint32_t nvals, uint32_t bitlen, uint32_t nthreads, e_mt_gen_alg mt_alg,
@@ -41,7 +42,12 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	 being inputed.
 	 */
 	ArithmeticCircuit* circ =
-			(ArithmeticCircuit*) sharings[sharing]->GetCircuitBuildRoutine();
+			(ArithmeticCircuit*) sharings[S_ARITH]->GetCircuitBuildRoutine();
+
+	BooleanCircuit* circ2 =
+			(BooleanCircuit*) sharings[S_BOOL]->GetCircuitBuildRoutine();
+	Circuit* yc = (Circuit*) sharings[S_YAO]->GetCircuitBuildRoutine();
+
 
 
 
@@ -56,7 +62,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	/**
 	 Step 5: Allocate the xvals and yvals that will hold the plaintext values.
 	 */
-	uint16_t x, y;
+	uint32_t x, y;
 
 	uint32_t *output, *output2, outbitlength, outnvals;
 
@@ -78,7 +84,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	 */
 	for (i = 0; i < num; i++) {
 
-		x = 8;
+		x = 4;
 		y = 5;
 		
 		
@@ -88,6 +94,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 
 	
 	}
+
 	for (int i=0; i<num; i++){
 
 
@@ -128,8 +135,10 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	
     
 
-	s_x_vec = circ->PutSIMDINGate(num, xvals.data(), 8, SERVER);
-	s_y_vec = circ->PutSIMDINGate(num, yvals.data(), 8, CLIENT);
+	s_x_vec = circ->PutSIMDINGate(num, xvals.data(), 32, SERVER);
+	s_y_vec = circ->PutSIMDINGate(num, yvals.data(), 32, CLIENT);
+
+
 	/**
 	 Step 7: Call the build method for building the circuit for the
 	 problem by passing the shared objects and circuit object.
@@ -138,13 +147,17 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 
 	s_out = BuildAddCircuit(s_x_vec, s_y_vec, num,
 			(ArithmeticCircuit*) circ);
+
+	s_out = circ2->PutY2BGate(yc->PutA2YGate(s_out));
+	
+	s_out2 = circ2->PutFPGate(s_out,SQRT,num,no_status);
 	/**
 	 Step 8: Output the value of s_out (the computation result) to both parties
 	 */
-	s_out2 = BuildSubCircuit(s_out, s_y_vec, num,
-			(ArithmeticCircuit*) circ);
+	//s_out2 = BuildSubCircuit(s_out, s_y_vec, num,
+	//		(ArithmeticCircuit*) circ);
 
-	s_out2 = circ->PutOUTGate(s_out2, ALL);
+	s_out2 = circ2->PutOUTGate(s_out, ALL);
 
 	/**
 	 Step 9: Executing the circuit using the ABYParty object evaluate the
@@ -156,7 +169,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	 */
 
 	//s_out_share = share* PutSharedINGate(share* s_out)
-	s_out2->get_clear_value_vec(&output, &outbitlength, &outnvals);
+	s_out->get_clear_value_vec(&output, &outbitlength, &outnvals);
 
 	
 
@@ -188,7 +201,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 
 
 	// s_out_vec = circ->PutSIMDINGate(num, PutSharedINGate(s_out), 16, SERVER);
-	// s_x_vec = circ->PutSIMDINGate(num, xvals.data(), 8, CLIENT);
+	// s_x_vec = circ->PutSIMDINGate(num, xvals.data(), 16, CLIENT);
 
 	// // new substraction circuit
 
