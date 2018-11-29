@@ -10,5 +10,7 @@ endif()
 
 
 
-add_executable(abyfloat_test abyfloat.cpp)
-target_link_libraries(abyfloat_test ABY::aby ENCRYPTO_utils::encrypto_utils)
+add_executable(Evaluator Evaluator.cpp common/circuit.cpp common/utils.cpp)
+add_executable(CSP CSP.cpp common/circuit.cpp common/utils.cpp)
+target_link_libraries(Evaluator ABY::aby ENCRYPTO_utils::encrypto_utils)
+target_link_libraries(CSP ABY::aby ENCRYPTO_utils::encrypto_utils)
