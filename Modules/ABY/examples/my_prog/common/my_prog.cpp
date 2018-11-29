@@ -84,7 +84,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	 */
 	for (i = 0; i < num; i++) {
 
-		x = 4;
+		x = 9;
 		y = 5;
 		
 		
@@ -99,7 +99,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 
 
 		if (i==0){
-			std::cout << "[" << xvals[i];
+			std::cout << "input a = [" << xvals[i];
 		}
 
 		else if (i == num-1){
@@ -118,7 +118,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	for (int i=0; i<num; i++){
 
 		if (i==0){
-			std::cout << "[" << yvals[i];
+			std::cout << "input b = [" << yvals[i];
 		}
 
 		else if (i == num-1){
@@ -133,11 +133,11 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	
 	}
 	
-    
+    uint32_t input;
+	input = 9;
 
-	s_x_vec = circ->PutSIMDINGate(num, xvals.data(), 32, SERVER);
-	s_y_vec = circ->PutSIMDINGate(num, yvals.data(), 32, CLIENT);
-
+	s_x_vec = circ2->PutSIMDINGate(num, xvals.data(), 32, SERVER);
+	s_y_vec = circ2->PutSIMDINGate(num, yvals.data(), 32, CLIENT);
 
 	/**
 	 Step 7: Call the build method for building the circuit for the
@@ -145,19 +145,20 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	 Don't forget to type cast the circuit object to type of share
 	 */
 
-	s_out = BuildAddCircuit(s_x_vec, s_y_vec, num,
-			(ArithmeticCircuit*) circ);
+	//s_out = BuildAddCircuit(s_x_vec, s_y_vec, num,
+	//		(ArithmeticCircuit*) circ);
 
-	s_out = circ2->PutY2BGate(yc->PutA2YGate(s_out));
+	//s_out = circ2->PutY2BGate(yc->PutA2YGate(s_x_vec));
 	
-	s_out2 = circ2->PutFPGate(s_out,SQRT,num,no_status);
+	s_out = circ2->PutFPGate(s_x_vec,s_y_vec,ADD,num,no_status);
 	/**
 	 Step 8: Output the value of s_out (the computation result) to both parties
 	 */
 	//s_out2 = BuildSubCircuit(s_out, s_y_vec, num,
 	//		(ArithmeticCircuit*) circ);
 
-	s_out2 = circ2->PutOUTGate(s_out, ALL);
+	s_out = circ2->PutOUTGate(s_out,ALL);
+	//s_out2 = circ->PutOUTGate(s_out2, ALL);
 
 	/**
 	 Step 9: Executing the circuit using the ABYParty object evaluate the
@@ -170,6 +171,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 
 	//s_out_share = share* PutSharedINGate(share* s_out)
 	s_out->get_clear_value_vec(&output, &outbitlength, &outnvals);
+	//s_out2->get_clear_value_vec(&output2, &outbitlength, &outnvals);
 
 	
 
@@ -178,7 +180,7 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 	for(int i=0; i<num; i++){
 
 		if (i==0){
-			std::cout << "[" << output[i];
+			std::cout << "sum = [" << output[i];
 		}
 
 		else if (i == num-1){
@@ -190,6 +192,8 @@ int32_t test_inner_product_circuit(e_role role, const std::string& address, uint
 
 		}
 	}
+
+
 
 
 
