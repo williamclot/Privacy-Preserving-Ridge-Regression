@@ -41,7 +41,6 @@ class Users:
             y = float(Ylist[i][0])
             a = np.dot(x,x.T)
             b = np.dot(y,x)
-
             bar.update()
             # append the contribution list, each element of c is [enc(Ai), enc(bi)]
             self.c.append(self.encrypt(a,b))

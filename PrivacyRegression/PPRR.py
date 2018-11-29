@@ -71,6 +71,11 @@ Users = Users.Users(CSP_Key, Xtrain, Ytrain, verbose=VERBOSE)
 Evaluator = Evaluator.Evaluator(CSP_Key, Users.c, LAMBDA, verbose=VERBOSE)
 A_enc = Evaluator.A_enc
 A_dec = CSP.decrypt(A_enc)
-print(A_dec)
+# print(A_dec)
+Atild = Evaluator.Atild
+Atild_dec = CSP.decrypt(Atild)
+AmuA = A_dec + Evaluator.muA
+# print('decrypted matrx:',Atild_dec)
+# print('original matrix', AmuA)
 
 
