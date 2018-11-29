@@ -73,14 +73,3 @@ std::vector<double> get_input(std::string file_name)
 
 	return input;
 }
-
-void convert_arr_to_int(uint64_t arr[], std::vector<double> vec, uint32_t nvals)
-{
-	uint64_t *a;
-	
-	for(int i=0;i<nvals;i++)
-	{
-		a = (uint64_t*) &vec[i];
-		arr[i] = *a;
-	}
-}
