@@ -57,7 +57,7 @@ void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 	*test_bit = int_testbit;
 }
 
-// Reading 
+// Reading values from input files
 std::vector<double> get_input(std::string file_name)
 {
 	// double vector to store the data & double value to store current line value;
@@ -72,4 +72,15 @@ std::vector<double> get_input(std::string file_name)
 	}
 
 	return input;
+}
+
+void convert_arr_to_int(uint64_t arr[], std::vector<double> vec, uint32_t nvals)
+{
+	uint64_t *a;
+	
+	for(int i=0;i<nvals;i++)
+	{
+		a = (uint64_t*) &vec[i];
+		arr[i] = *a;
+	}
 }

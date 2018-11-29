@@ -14,7 +14,7 @@
 
 int main(int argc, char** argv) {
 
-	std::cout << "Launching CSP [-]" << std::endl;
+	std::cout << "Launching Evaluator [-]" << std::endl;
 	
 	// Hardcoded client role
 	e_role role = CLIENT;

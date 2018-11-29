@@ -32,4 +32,8 @@ void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 // Getting the input from a file
 std::vector<double> get_input(std::string file_name);
 
+// Converting double vector to uint64 vector
+void convert_arr_to_int(uint64_t arr[], std::vector<double> vec, uint32_t nvals);
+
+
 #endif
