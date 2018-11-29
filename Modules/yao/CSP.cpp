@@ -14,9 +14,11 @@
 
 int main(int argc, char** argv) {
 
+	std::cout << "Launching CSP [-]" << std::endl;
+
 	// Hardcoded server role
 	e_role role = SERVER;
-	uint32_t bitlen = 1, nvals = 4, secparam = 128, nthreads = 1;
+	uint32_t bitlen = 1, nvals = 9, secparam = 128, nthreads = 1;
 
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
@@ -24,15 +26,19 @@ int main(int argc, char** argv) {
 	int32_t test_op = -1;
 	e_mt_gen_alg mt_alg = MT_OT;
 	uint32_t test_bit = 0;
-	double fpa = 0, fpb = 0;
 
 	// Reading options
 	read_test_options(&argc, &argv, &role, &bitlen, &nvals, &secparam, &address,
-		&port, &test_op, &test_bit, &circuit, &fpa, &fpb);
+		&port, &test_op, &test_bit, &circuit);
+
+	// Reading the inputs in the /input folder and parsing them in a std::vector
+	std::vector<double> csp_data;
+	csp_data = get_input("../input/CSP");
+	print_vector(csp_data, nvals, "Opening CSP data...");
 
 	seclvl seclvl = get_sec_lvl(secparam);
 
-	test_circuit(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL, fpa, fpb);
+	test_circuit(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL, csp_data);
 
 	return 0;
 }

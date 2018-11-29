@@ -11,9 +11,10 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream>
+#include "utils.h"
 
 void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl, uint32_t nvals, uint32_t nthreads,
-	e_mt_gen_alg mt_alg, e_sharing sharing, double afp, double bfp) {
+	e_mt_gen_alg mt_alg, e_sharing sharing, std::vector <double> data) {
 
 	// we operate on doubles, so set bitlen to 64 bits
 	uint32_t bitlen = 64;
@@ -24,42 +25,45 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 
 	BooleanCircuit* circ = (BooleanCircuit*) sharings[sharing]->GetCircuitBuildRoutine();
 
-	// point a uint64_t pointer to the two input floats without casting the content
-	uint64_t *aptr = (uint64_t*) &afp;
-	uint64_t *bptr = (uint64_t*) &bfp;
+	// print_vector(data, nvals, "Opening CSP data...");
 
-	// array of 64 bit values
-	uint64_t avals[nvals];
-	uint64_t bvals[nvals];
 
-	// fill array with input values nvals times.
-	std::fill(avals, avals + nvals, *aptr);
-	std::fill(bvals, bvals + nvals, *bptr);
+	// // point a uint64_t pointer to the two input floats without casting the content
+	// uint64_t *aptr = (uint64_t*) &afp;
+	// uint64_t *bptr = (uint64_t*) &bfp;
 
-	// SIMD input gates
-	share* ain = circ->PutSIMDINGate(nvals, avals, bitlen, SERVER);
-	share* bin = circ->PutSIMDINGate(nvals, bvals, bitlen, CLIENT);
+	// // array of 64 bit values
+	// uint64_t avals[nvals];
+	// uint64_t bvals[nvals];
 
-	// FP addition gate
-	share* sum = circ->PutFPGate(ain, bin, ADD, nvals, no_status);
+	// // fill array with input values nvals times.
+	// std::fill(avals, avals + nvals, *aptr);
+	// std::fill(bvals, bvals + nvals, *bptr);
 
-	// output gate
-	share* res_out = circ->PutOUTGate(sum, ALL);
+	// // SIMD input gates
+	// share* ain = circ->PutSIMDINGate(nvals, avals, bitlen, SERVER);
+	// share* bin = circ->PutSIMDINGate(nvals, bvals, bitlen, CLIENT);
 
-	// run SMPC
-	party->ExecCircuit();
+	// // FP addition gate
+	// share* sum = circ->PutFPGate(ain, bin, ADD, nvals, no_status);
 
-	// retrieve plain text output
-	uint32_t out_bitlen, out_nvals;
-	uint64_t *out_vals;
-	res_out->get_clear_value_vec(&out_vals, &out_bitlen, &out_nvals);
+	// // output gate
+	// share* res_out = circ->PutOUTGate(sum, ALL);
 
-	// print every output
-	for (uint32_t i = 0; i < nvals; i++) {
+	// // run SMPC
+	// party->ExecCircuit();
 
-		// dereference output value as double without casting the content
-		double val = *((double*) &out_vals[i]);
+	// // retrieve plain text output
+	// uint32_t out_bitlen, out_nvals;
+	// uint64_t *out_vals;
+	// res_out->get_clear_value_vec(&out_vals, &out_bitlen, &out_nvals);
 
-		std::cout << "RES: " << val << std::endl;
-	}
+	// // print every output
+	// for (uint32_t i = 0; i < nvals; i++) {
+
+	// 	// dereference output value as double without casting the content
+	// 	double val = *((double*) &out_vals[i]);
+
+	// 	std::cout << "RES: " << val << std::endl;
+	// }
 }

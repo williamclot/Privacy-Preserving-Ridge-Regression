@@ -22,11 +22,14 @@ Date: 26/11/18
 using namespace std;
 
 // Function that enables to print a Vector to std::cout
-void printVector(vector<uint16_t> &vect, int num, string name);
+void print_vector(vector<double> &vect, int num, string name);
 
 // Function to read options and inputs
 void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 	uint32_t* bitlen, uint32_t* nvals, uint32_t* secparam, std::string* address,
-	uint16_t* port, int32_t* test_op, uint32_t* test_bit, std::string* circuit, double* fpa, double* fpb);
+	uint16_t* port, int32_t* test_op, uint32_t* test_bit, std::string* circuit);
+
+// Getting the input from a file
+std::vector<double> get_input(std::string file_name);
 
 #endif
