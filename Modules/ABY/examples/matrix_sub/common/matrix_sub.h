@@ -37,5 +37,4 @@ int32_t test_matrix_sub_circuit(e_role role, const std::string& address, uint16_
  */
 share* BuildMatrixSubCircuit(share *s_x, share *s_y, uint32_t num, ArithmeticCircuit *ac);
 
-
 #endif

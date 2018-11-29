@@ -37,14 +37,13 @@ int32_t test_matrix_sub_circuit(e_role role, const std::string& address, uint16_
 	 */
 	uint16_t x, y;
 
-	uint16_t output, v_sum = 0;
+	uint32_t out_bitlen , out_nvals , *out_vals;
 
 	std::vector<uint16_t> xvals(num);
 	std::vector<uint16_t> yvals(num);
 
 	uint32_t i;
-	srand(time(NULL));
-
+	
 	/**
 	 Step 6: Fill the arrays xvals and yvals with the generated random values.
 	 Both parties use the same seed, to be able to verify the
@@ -57,10 +56,8 @@ int32_t test_matrix_sub_circuit(e_role role, const std::string& address, uint16_
 	 */
 	for (i = 0; i < num; i++) {
 
-		x = rand();
-		y = rand();
-
-		v_sum += x * y;
+		x = i+5;
+		y = i;
 
 		xvals[i] = x;
 		yvals[i] = y;
@@ -91,11 +88,47 @@ int32_t test_matrix_sub_circuit(e_role role, const std::string& address, uint16_
 	/**
 	 Step 10: Type caste the plaintext output to 16 bit unsigned integer.
 	 */
-	output = s_out->get_clear_value<uint16_t>();
+	s_out->get_clear_value_vec(&out_vals, &out_bitlen, &out_nvals);
 
-	std::cout << "\nCircuit Result: " << output;
-	std::cout << "\nVerification Result: " << v_sum << std::endl;
+	std::cout << "A vector: \n";
+	for (int i = 0; i < num; i++){
+		if (i == 0){
+			std::cout << "[";
+		}
+    	std::cout << xvals[i];
+		if (i == num - 1){
+			std::cout << "]\n";
+		} else {
+			std::cout << ",";
+		}
+	}
+		
+	std::cout << "B vector: \n";
+	for (int i = 0; i < num; i++){
+		if (i == 0){
+			std::cout << "[";
+		}
+    	std::cout << yvals[i];
+		if (i == num - 1){
+			std::cout << "]";
+		} else {
+			std::cout << ",";
+		}
+	}
 
+	std::cout << "\nCircuit Result: \n";
+	for (int i = 0; i < num; i++){
+		if (i == 0){
+			std::cout << "[";
+		}
+    	std::cout << out_vals[i];
+		if (i == num - 1){
+			std::cout << "]";
+		} else {
+			std::cout << ",";
+		}
+	}
+	std::cout << '\n';
 	delete s_x_vec;
 	delete s_y_vec;
 	delete party;
@@ -109,20 +142,17 @@ int32_t test_matrix_sub_circuit(e_role role, const std::string& address, uint16_
 share* BuildMatrixSubCircuit(share *s_x, share *s_y, uint32_t num, ArithmeticCircuit *ac) {
 	uint32_t i;
 
-	// pairwise multiplication of all input values
-	s_x = ac->PutMULGate(s_x, s_y);
-
 	// split SIMD gate to separate wires (size many)
-	s_x = ac->PutSplitterGate(s_x);
+	// s_x = ac->PutSplitterGate(s_x);
+	// s_y = ac->PutSplitterGate(s_y);
 
-	// add up the individual multiplication results and store result on wire 0
-	// in arithmetic sharing ADD is for free, and does not add circuit depth, thus simple sequential adding
-	for (i = 1; i < num; i++) {
-		s_x->set_wire_id(0, ac->PutADDGate(s_x->get_wire_id(0), s_x->get_wire_id(i)));
-	}
-
-	// discard all wires, except the addition result
-	s_x->set_bitlength(1);
+	// // add up the individual multiplication results and store result on wire 0
+	// // in arithmetic sharing ADD is for free, and does not add circuit depth, thus simple sequential adding
+	// for (i = 0; i < num; i++) {
+	// 	s_x->set_wire_id(i, ac->PutSUBGate(s_x->get_wire_id(i), s_y->get_wire_id(i)));
+	// }
+	
+	s_x = ac->PutSUBGate(s_x, s_y);
 
 	return s_x;
 }
