@@ -23,9 +23,13 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 
 	std::vector<Sharing*>& sharings = party->GetSharings();
 
-	BooleanCircuit* circ = (BooleanCircuit*) sharings[sharing]->GetCircuitBuildRoutine();
+	BooleanCircuit* bc = (BooleanCircuit*) sharings[S_BOOL]->GetCircuitBuildRoutine();
+	ArithmeticCircuit* ac = (ArithmeticCircuit*) sharings[S_ARITH]->GetCircuitBuildRoutine();
+	Circuit* yc = (Circuit*) sharings[S_YAO]->GetCircuitBuildRoutine();
 
-	// Converting double values to vector of uint64 pointers to double value...
+
+	// DATA FORMATTING
+	// -----------------------------------
 
 	uint64_t input_csp[nvals];
 	uint64_t input_eval[nvals];
@@ -37,33 +41,79 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 		input_eval[i] = *valuetr;
 	}
 
+	// CIRCUIT INPUTS
+	// -----------------------------------
+
 	// SIMD input gates
-	share* csp_in = circ->PutSIMDINGate(nvals, input_csp, bitlen, SERVER);
-	share* eval_in = circ->PutSIMDINGate(nvals, input_eval, bitlen, CLIENT);
+	share* csp_in = bc->PutSIMDINGate(nvals, input_csp, bitlen, SERVER); // A + mu_a
+	share* eval_in = bc->PutSIMDINGate(nvals, input_eval, bitlen, CLIENT); // mu_a
 
-	// // FP addition gate
-	share* sum = circ->PutFPGate(csp_in, eval_in, SUB, nvals, no_status);
+	// CIRCUIT OPERATIONS
+	// -----------------------------------
 
-	// // output gate
-	share* res_out = circ->PutOUTGate(sum, ALL);
+	// FP substraction gate to remove mask mu_A from A + mu_a
+	share* A = MatrixSubstraction(csp_in, eval_in, bc, nvals);
 
-	// // run SMPC
+	// Putting a vector of zeros to initiate Lower decomposition of cholesky
+	uint64_t constant = 5;
+	uint64_t zeros[nvals] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+	share* L = ac->PutSIMDINGate(nvals, zeros, bitlen, SERVER); // zeros
+
+	A = ac->PutB2AGate(A);
+	A = ac->PutSplitterGate(A);
+	L = ac->PutSplitterGate(L);
+
+	int n = sqrt(nvals); // number of lines (OK)
+
+	for(int i=0; i<nvals; i++){
+		L->set_wire_id(i, A->get_wire_id(i));
+	}
+
+	L = ac->PutCombinerGate(L);
+	// A = bc->PutY2BGate(yc->PutA2YGate(A));
+
+	// CIRCUIT OUTPUTS
+	// -----------------------------------
+	share* res_out = ac->PutOUTGate(L, ALL);
+
+	// run SMPC
 	party->ExecCircuit();
 
 	// // retrieve plain text output
 	uint32_t out_bitlen, out_nvals;
 	uint64_t *out_vals;
 	res_out->get_clear_value_vec(&out_vals, &out_bitlen, &out_nvals);
-
 	if (role == CLIENT) {
 		// print every output
 		for (uint32_t i = 0; i < nvals; i++) {
-
 			// dereference output value as double without casting the content
 			double val = *((double*) &out_vals[i]);
-
 			std::cout << val << std::endl;
 		}
 	}
 
+
+}
+
+share* MatrixSubstraction(share *s_A, share *s_B, BooleanCircuit *bc, uint32_t nvals){
+	share* out = bc->PutFPGate(s_A, s_B, SUB, nvals, no_status);
+	return out;
+}
+
+share* extract_index(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit *ac) 
+{
+	uint64_t zero = 0;
+	share* out = ac->PutCONSGate(zero,bitlen);
+
+	out->set_wire_id(0, s_x->get_wire_id(i));
+
+	return out;
+}
+
+share* put_index(share *s_x , share *element, uint32_t i, uint32_t bitlen, ArithmeticCircuit *ac) 
+{
+	s_x->set_wire_id(i, element->get_wire_id(0));
+
+	return s_x;
 }
