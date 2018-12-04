@@ -57,25 +57,35 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// Putting a vector of zeros to initiate Lower decomposition of cholesky
 	uint64_t constant = 5;
 	uint64_t zeros[nvals] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint64_t zero = 0;
 
 	share* L = ac->PutSIMDINGate(nvals, zeros, bitlen, SERVER); // zeros
+	share* zero_share = bc->PutINGate(zero, bitlen, SERVER);
 
 	A = ac->PutB2AGate(A);
 	A = ac->PutSplitterGate(A);
 	L = ac->PutSplitterGate(L);
 
 	int n = sqrt(nvals); // number of lines (OK)
-
-	for(int i=0; i<nvals; i++){
-		L->set_wire_id(i, A->get_wire_id(i));
+	for(int i=0; i<n; i++){
+		share* mul = zero_share;
+		for(int k=0; k<n; k++){
+			uint32_t index = i*n+k;
+			share* currentL = extract_index(L, index, bitlen, ac); //L[i*n+k]
+			currentL = bc->PutY2BGate(yc->PutA2YGate(currentL)); //Converting to bc
+			currentL = bc->PutFPGate(currentL, currentL, MUL, no_status); //currentL**2
+			mul = bc->PutFPGate(mul, currentL, ADD, no_status); //mul += currentL**2
+		}
+		mul = ac->PutB2AGate(mul);
+		A->set_wire_id(i, mul->get_wire_id(0));
 	}
 
-	L = ac->PutCombinerGate(L);
+	A = ac->PutCombinerGate(A);
 	// A = bc->PutY2BGate(yc->PutA2YGate(A));
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
-	share* res_out = ac->PutOUTGate(L, ALL);
+	share* res_out = ac->PutOUTGate(A, ALL);
 
 	// run SMPC
 	party->ExecCircuit();
