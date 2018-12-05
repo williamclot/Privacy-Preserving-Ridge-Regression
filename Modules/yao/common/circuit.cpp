@@ -80,15 +80,42 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 		}
 		
 		index=i*(n+1);
-
 		temp = extract_index(A, index, bitlen, ac); //A[i*(n+1)]
-		temp = bc->PutY2BGate(yc->PutA2YGate(temp)); //Converting to bc
-		temp = bc->PutFPGate(temp, mul, SUB, no_status);
+		temp = bc->PutY2BGate(yc->PutA2YGate(temp)); //Converting A[i*(n+1)] from ac to bc
+		temp = bc->PutFPGate(temp, mul, SUB, no_status); //L[i*n+i] = (A[i*n+i] - mul) 
 		// temp = bc->PutFPGate(temp, SQRT, no_status);
-		temp = ac->PutB2AGate(temp);
-
-		L->set_wire_id(index, temp->get_wire_id(0));
+		temp = ac->PutB2AGate(temp); //convert L[i*n+i] from bc to ac
+		L->set_wire_id(index, temp->get_wire_id(0)); //append the new values to L.
 		// A->set_wire_id(i, mul->get_wire_id(0));
+
+
+
+
+		for (j=i+1; j<n; j++){
+			share* mul = zero_share;
+			for (k=0; k < n; k++){
+				index1 = i*n+k
+				index2 = j*n+k
+				temp1 = extract_index(L, index1, bitlen, ac); //extract L[i*n+k] from L
+				temp2 = extract_index(L, index2, bitlen, ac); //extract L[j*n+k] from L
+				temp1 = bc->PutY2BGate(yc->PutA2YGate(temp1)); // convert from ac to bc
+				temp2 = bc->PutY2BGate(yc->PutA2YGate(temp2));
+				temp = bc->PutFPGate(temp1, temp2, MUL, no_status); // compute L[i*n+k]*L[j*n+k]
+				mul = bc->PutFPGate(mul, temp, ADD, no_status); // mul += L[i*n+k]*L[j*n+k]
+			}
+
+			index = j*n+i
+			temp = extract_index(A, index, bitlen, ac); //A[j*n+i]
+			temp = bc->PutY2BGate(yc->PutA2YGate(temp)); // convert A[j*n+i] from ac to bc
+			temp = bc->PutFPGate(temp, mul, SUB, no_status); //A[j*n+i]-mul
+			
+
+		}
+
+
+
+
+
 	}
 
 	L = ac->PutCombinerGate(L);
