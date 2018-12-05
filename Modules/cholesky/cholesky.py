@@ -36,7 +36,7 @@ for i in range(n):
     mul = 0
     for k in range(n): mul += L[i*n+k]**2
     # Getting diagonal elements
-    L[i*n+i] = (A[i*n+i] - mul) 
+    L[i*n+i] = m.sqrt(A[i*n+i] - mul) 
     
     for j in range(i+1, n):
         mul = 0
