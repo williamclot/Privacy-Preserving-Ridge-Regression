@@ -66,55 +66,10 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 
 	// FP substraction gate to remove mask mu_A from A + mu_a
 	share* A = MatrixSubstraction(csp_in, eval_in, bc, nvals);
-	// L = Cholesky(A, L, zero_share, bitlen, nvals, ac, bc, yc);
-	A = ac->PutB2AGate(A);
-	A = ac->PutSplitterGate(A);
-	L = ac->PutSplitterGate(L);
+	// share* result = SqurtApprox(half, half, 5, bitlen, ac, bc, yc);
+	L = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
+	
 
-	int n = sqrt(nvals); // number of lines (OK)
-
-	for(int i=0; i<n; i++){
-		share* mul = zero_share;
-		uint32_t index;
-		share* temp;
-		for(int k=0; k<n; k++){
-			index = i*n+k;
-			temp = ExtractIndex(L, index, bitlen, ac); //L[i*n+k]
-			temp = bc->PutY2BGate(yc->PutA2YGate(temp)); //Converting to bc
-			temp = bc->PutFPGate(temp, temp, MUL, no_status); //currentL**2
-			mul = bc->PutFPGate(mul, temp, ADD, no_status); //mul += currentL**2
-		}
-		
-		index=i*(n+1);
-		temp = ExtractIndex(A, index, bitlen, ac); //A[i*(n+1)]
-		temp = bc->PutY2BGate(yc->PutA2YGate(temp)); //Converting A[i*(n+1)] from ac to bc
-		temp = bc->PutFPGate(temp, mul, SUB, no_status); //L[i*n+i] = (A[i*n+i] - mul) 
-		temp = bc->PutFPGate(temp, SQRT, no_status);
-		temp = ac->PutB2AGate(temp); //convert L[i*n+i] from bc to ac
-		L->set_wire_id(index, temp->get_wire_id(0)); //append the new values to L.
-		// A->set_wire_id(i, mul->get_wire_id(0));
-
-		// for (j=i+1; j<n; j++){
-		// 	share* mul = zero_share;
-		// 	for (k=0; k < n; k++){
-		// 		index1 = i*n+k
-		// 		index2 = j*n+k
-		// 		temp1 = ExtractIndex(L, index1, bitlen, ac); //extract L[i*n+k] from L
-		// 		temp2 = ExtractIndex(L, index2, bitlen, ac); //extract L[j*n+k] from L
-		// 		temp1 = bc->PutY2BGate(yc->PutA2YGate(temp1)); // convert from ac to bc
-		// 		temp2 = bc->PutY2BGate(yc->PutA2YGate(temp2));
-		// 		temp = bc->PutFPGate(temp1, temp2, MUL, no_status); // compute L[i*n+k]*L[j*n+k]
-		// 		mul = bc->PutFPGate(mul, temp, ADD, no_status); // mul += L[i*n+k]*L[j*n+k]
-		// 	}
-
-		// 	index = j*n+i
-		// 	temp = ExtractIndex(A, index, bitlen, ac); //A[j*n+i]
-		// 	temp = bc->PutY2BGate(yc->PutA2YGate(temp)); // convert A[j*n+i] from ac to bc
-		// 	temp = bc->PutFPGate(temp, mul, SUB, no_status); //A[j*n+i]-mul
-		// }
-	}
-
-	L = ac->PutCombinerGate(L);
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
@@ -141,12 +96,21 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 share* MatrixSubstraction(share *s_A, share *s_B, BooleanCircuit *bc, uint32_t nvals){
 	/*~~~~ returns a share with a two by two substration between s_A and s_B ~~~~~*/
 
+	/*  Initial states of sharings.
+		s_A -> BOOL
+		s_B -> BOOL
+	*/
+
 	share* out = bc->PutFPGate(s_A, s_B, SUB, nvals, no_status); // s_A and s_B are in Boolean share
 	return out;
 }
 
 share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit *ac){
-	/*~~~~ returns a share with an Babylonian approximation of a square root of s_x ~~~~~*/
+	/*~~~~ returns a share of the ith wire of s_x ~~~~~*/
+
+	/*  Initial states of sharings.
+		s_x -> ARITHM
+	*/
 
 	uint64_t zero = 0;
 	share* out = ac->PutCONSGate(zero,bitlen);
@@ -159,15 +123,82 @@ share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit 
 share* SqurtApprox(share *element, share *half, uint32_t step, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 	/*~~~~ returns a share with an Babylonian approximation of a square root of element ~~~~~*/
 
-	element = bc->PutY2BGate(yc->PutA2YGate(element));
+	/*  Initial states of sharings.
+		element -> BOOL
+		half -> BOOL
+	*/
+
 	share* temp = element;
 	share* division;
 
 	for(int i=0; i<step; i++){
-		division = bc->PutFPGate(element, temp, DIV, no_status);
-		division = bc->PutFPGate(temp, division, ADD, no_status);
-		temp = bc->PutFPGate(half, division, MUL, no_status);
+		division = bc->PutFPGate(element, temp, DIV);
+		division = bc->PutFPGate(temp, division, ADD);
+		temp = bc->PutFPGate(half, division, MUL);
 	}
 
 	return temp;
+}
+
+share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bitlen, uint32_t nvals, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+	/*~~~~ returns a share with an Babylonian approximation of a square root of element ~~~~~*/
+
+	/*Initial states of sharings.
+		A -> BOOL
+		L -> ARITH
+		zero_share -> ARITH
+	*/
+
+	int n = sqrt(nvals); // number of lines (OK)
+	uint32_t index; // int to access particular indexes of SIMD gates
+
+	A = ac->PutB2AGate(A);
+	A = ac->PutSplitterGate(A);
+	L = ac->PutSplitterGate(L);
+
+	for(int i=0; i<n; i++){
+		
+		share* mul = zero_share;
+		share* temp;
+
+		for(int k=0; k<n; k++){
+			index = i*n+k;
+			temp = ExtractIndex(L, index, bitlen, ac); //L[i*n+k]
+			temp = bc->PutY2BGate(yc->PutA2YGate(temp)); //Converting to bc
+			temp = bc->PutFPGate(temp, temp, MUL, no_status); //currentL**2
+			mul = bc->PutFPGate(mul, temp, ADD, no_status); //mul += currentL**2
+		}
+		
+		index=i*(n+1);
+		temp = ExtractIndex(A, index, bitlen, ac); //A[i*(n+1)]
+		temp = bc->PutY2BGate(yc->PutA2YGate(temp)); //Converting A[i*(n+1)] from ac to bc
+		temp = bc->PutFPGate(temp, mul, SUB, no_status); //L[i*n+i] = (A[i*n+i] - mul) 
+
+		temp = SqurtApprox(temp, half, 5, bitlen, ac, bc, yc);
+		temp = ac->PutB2AGate(temp); //convert L[i*n+i] from bc to ac
+		L->set_wire_id(index, temp->get_wire_id(0)); //append the new values to L.
+		// A->set_wire_id(i, mul->get_wire_id(0));
+
+		// for (j=i+1; j<n; j++){
+		// 	share* mul = zero_share;
+		// 	for (k=0; k < n; k++){
+		// 		index1 = i*n+k
+		// 		index2 = j*n+k
+		// 		temp1 = ExtractIndex(L, index1, bitlen, ac); //extract L[i*n+k] from L
+		// 		temp2 = ExtractIndex(L, index2, bitlen, ac); //extract L[j*n+k] from L
+		// 		temp1 = bc->PutY2BGate(yc->PutA2YGate(temp1)); // convert from ac to bc
+		// 		temp2 = bc->PutY2BGate(yc->PutA2YGate(temp2));
+		// 		temp = bc->PutFPGate(temp1, temp2, MUL, no_status); // compute L[i*n+k]*L[j*n+k]
+		// 		mul = bc->PutFPGate(mul, temp, ADD, no_status); // mul += L[i*n+k]*L[j*n+k]
+		// 	}
+
+		// 	index = j*n+i
+		// 	temp = ExtractIndex(A, index, bitlen, ac); //A[j*n+i]
+		// 	temp = bc->PutY2BGate(yc->PutA2YGate(temp)); // convert A[j*n+i] from ac to bc
+		// 	temp = bc->PutFPGate(temp, mul, SUB, no_status); //A[j*n+i]-mul
+		// }
+	}
+
+	L = ac->PutCombinerGate(L);
+	return L;
 }
