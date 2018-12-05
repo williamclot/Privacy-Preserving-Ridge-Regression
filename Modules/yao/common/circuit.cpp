@@ -69,23 +69,34 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	int n = sqrt(nvals); // number of lines (OK)
 	for(int i=0; i<n; i++){
 		share* mul = zero_share;
+		uint32_t index;
+		share* temp;
 		for(int k=0; k<n; k++){
-			uint32_t index = i*n+k;
-			share* currentL = extract_index(L, index, bitlen, ac); //L[i*n+k]
-			currentL = bc->PutY2BGate(yc->PutA2YGate(currentL)); //Converting to bc
-			currentL = bc->PutFPGate(currentL, currentL, MUL, no_status); //currentL**2
-			mul = bc->PutFPGate(mul, currentL, ADD, no_status); //mul += currentL**2
+			index = i*n+k;
+			temp = extract_index(L, index, bitlen, ac); //L[i*n+k]
+			temp = bc->PutY2BGate(yc->PutA2YGate(temp)); //Converting to bc
+			temp = bc->PutFPGate(temp, temp, MUL, no_status); //currentL**2
+			mul = bc->PutFPGate(mul, temp, ADD, no_status); //mul += currentL**2
 		}
-		mul = ac->PutB2AGate(mul);
-		A->set_wire_id(i, mul->get_wire_id(0));
+		
+		index=i*(n+1);
+
+		temp = extract_index(A, index, bitlen, ac); //A[i*(n+1)]
+		temp = bc->PutY2BGate(yc->PutA2YGate(temp)); //Converting to bc
+		temp = bc->PutFPGate(temp, mul, SUB, no_status);
+		// temp = bc->PutFPGate(temp, SQRT, no_status);
+		temp = ac->PutB2AGate(temp);
+
+		L->set_wire_id(index, temp->get_wire_id(0));
+		// A->set_wire_id(i, mul->get_wire_id(0));
 	}
 
-	A = ac->PutCombinerGate(A);
+	L = ac->PutCombinerGate(L);
 	// A = bc->PutY2BGate(yc->PutA2YGate(A));
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
-	share* res_out = ac->PutOUTGate(A, ALL);
+	share* res_out = ac->PutOUTGate(L, ALL);
 
 	// run SMPC
 	party->ExecCircuit();
