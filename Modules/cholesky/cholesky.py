@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import numpy as np
 import math as m
 
@@ -18,7 +20,7 @@ def cholesky(A):
         for j in range(i+1, n):
             L[j][i] = (A[j][i] - np.dot(L[i,:], L[j, :]))/L[i][i]
     return L
-print(cholesky(A))
+#print(cholesky(A))
 
 
 ########## THINKING OF THE ABY IMPLEMENTATION #########
@@ -44,7 +46,6 @@ for i in range(n):
             mul += L[i*n+k]*L[j*n+k]
         # Getting the [j][i] element
         L[j*n+i] = (A[j*n+i]-mul)/L[i*n+i]
+        print("modifying :", j*n+i)
 print(L)
-
-
 
