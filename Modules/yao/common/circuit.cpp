@@ -65,8 +65,11 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// -----------------------------------
 
 	// FP substraction gate to remove mask mu_A from A + mu_a
-	share* A = MatrixSubstraction(csp_in, eval_in, bc, nvals);
-	share* result = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
+	// share* A = MatrixSubstraction(csp_in, eval_in, bc, nvals);
+	// share* result = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
+	share* zero_ac = ac->PutB2AGate(half);
+
+	share* result = CreateEmptyArray(zero_ac, nvals, ac);
 	
 
 	// CIRCUIT OUTPUTS
@@ -77,7 +80,7 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// run SMPC
 	party->ExecCircuit();
 
-	// // retrieve plain text output
+	// retrieve plain text output
 	uint32_t out_bitlen, out_nvals;
 	uint64_t *out_vals;
 	res_out->get_clear_value_vec(&out_vals, &out_bitlen, &out_nvals);
@@ -121,7 +124,7 @@ share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit 
 	return out;
 }
 
-share* SqurtApprox(share *element, share *half, uint32_t step, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+share* SqurtApprox(share *element, share *half, uint32_t step, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 	/*~~~~ returns a share with an Babylonian approximation of a square root of element ~~~~~*/
 
 	/*  Initial states of sharings.
@@ -142,7 +145,7 @@ share* SqurtApprox(share *element, share *half, uint32_t step, uint32_t bitlen, 
 }
 
 share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bitlen, uint32_t nvals, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
-	/*~~~~ returns a share with an Babylonian approximation of a square root of element ~~~~~*/
+	/*~~~~ returns a share with the Cholesky decomposition of A ~~~~~*/
 
 	/*Initial states of sharings.
 		A -> BOOL
@@ -175,7 +178,7 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 		temp = ExtractIndex(A, index, bitlen, ac, bc, yc); // A[i*(n+1)]
 		temp = bc->PutFPGate(temp, mul, SUB, no_status); // L[i*n+i] = (A[i*n+i] - mul) 
 
-		temp = SqurtApprox(temp, half, 5, bitlen, ac, bc, yc);
+		temp = SqurtApprox(temp, half, 5, ac, bc, yc);
 		currentL = temp; // Nice little optimization to avoid extracting this value later on from L
 		temp = ac->PutB2AGate(temp); // convert L[i*n+i] from bc to ac
 		L->set_wire_id(index, temp->get_wire_id(0)); // append the new values to L.
