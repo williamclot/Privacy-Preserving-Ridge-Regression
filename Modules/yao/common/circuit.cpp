@@ -66,10 +66,8 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 
 	// FP substraction gate to remove mask mu_A from A + mu_a
 	share* A = MatrixSubstraction(csp_in, eval_in, bc, nvals);
-	// share* result = SqurtApprox(half, half, 5, bitlen, ac, bc, yc);
 	share* result = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
 	
-
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
@@ -154,8 +152,6 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 
 	int n = sqrt(nvals); // number of lines (OK)
 	uint32_t index; // int to access particular indexes of SIMD gates
-	uint32_t index1;
-	uint32_t index2;
 
 	A = ac->PutB2AGate(A);
 	A = ac->PutSplitterGate(A);
@@ -164,44 +160,44 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 	for(int i=0; i<n; i++){
 		
 		share* mul = zero_share;
-		share* temp; 
+		share* temp;
 		share* tempi;
 		share* currentL;
 
 		for(int k=0; k<n; k++){
 			index = i*n+k;
-			temp = ExtractIndex(L, index, bitlen, ac, bc, yc); //L[i*n+k]
-			temp = bc->PutFPGate(temp, temp, MUL, no_status); //currentL**2
-			mul = bc->PutFPGate(mul, temp, ADD, no_status); //mul += currentL**2
+			temp = ExtractIndex(L, index, bitlen, ac, bc, yc); // L[i*n+k]
+			temp = bc->PutFPGate(temp, temp, MUL, no_status); // currentL**2
+			mul = bc->PutFPGate(mul, temp, ADD, no_status); // mul += currentL**2
 		}
 		
 		index=i*n+i;
-		temp = ExtractIndex(A, index, bitlen, ac, bc, yc); //A[i*(n+1)]
-		temp = bc->PutFPGate(temp, mul, SUB, no_status); //L[i*n+i] = (A[i*n+i] - mul) 
+		temp = ExtractIndex(A, index, bitlen, ac, bc, yc); // A[i*(n+1)]
+		temp = bc->PutFPGate(temp, mul, SUB, no_status); // L[i*n+i] = (A[i*n+i] - mul) 
 
 		temp = SqurtApprox(temp, half, 5, bitlen, ac, bc, yc);
-		temp = ac->PutB2AGate(temp); //convert L[i*n+i] from bc to ac
-		L->set_wire_id(index, temp->get_wire_id(0)); //append the new values to L.
+		currentL = temp; // Nice little optimization to avoid extracting this value later on from L
+		temp = ac->PutB2AGate(temp); // convert L[i*n+i] from bc to ac
+		L->set_wire_id(index, temp->get_wire_id(0)); // append the new values to L.
 
 		for (int j=i+1; j<n; j++){
 			mul = zero_share;
 			for (int k=0; k < n; k++){
 				index = i*n+k;
-				temp = ExtractIndex(L, index, bitlen, ac, bc, yc); //extract L[i*n+k] from L
+				temp = ExtractIndex(L, index, bitlen, ac, bc, yc); // extract L[i*n+k] from L
 				index = j*n+k;
-				tempi = ExtractIndex(L, index, bitlen, ac, bc, yc); //extract L[j*n+k] from L
+				tempi = ExtractIndex(L, index, bitlen, ac, bc, yc); // extract L[j*n+k] from L
 				temp = bc->PutFPGate(temp, tempi, MUL, no_status); // compute L[i*n+k]*L[j*n+k]
 				mul = bc->PutFPGate(mul, temp, ADD, no_status); // mul += L[i*n+k]*L[j*n+k]
 			}
 			index = j*n+i;
-			temp = ExtractIndex(A, index, bitlen, ac, bc, yc); //A[j*n+i]
-			temp = bc->PutFPGate(temp, mul, SUB, no_status); //A[j*n+i]-mul
+			temp = ExtractIndex(A, index, bitlen, ac, bc, yc); // A[j*n+i]
+			temp = bc->PutFPGate(temp, mul, SUB, no_status); // A[j*n+i]-mul
 			index = i*n+i;
-			currentL = ExtractIndex(L, index, bitlen, ac, bc, yc);
 			temp = bc->PutFPGate(temp, currentL, DIV, no_status);
-			temp = ac->PutB2AGate(temp); //convert bc to ac
+			temp = ac->PutB2AGate(temp); // convert bc to ac
 			index = j*n+i;
-			L->set_wire_id(index, temp->get_wire_id(0)); //append the new values to L.
+			L->set_wire_id(index, temp->get_wire_id(0)); // append the new values to L.
 		}
 	}
 	L = ac->PutCombinerGate(L);

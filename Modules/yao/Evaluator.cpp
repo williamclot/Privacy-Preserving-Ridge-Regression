@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 	
 	// Hardcoded client role
 	e_role role = CLIENT;
-	uint32_t bitlen = 1, nvals = 9, secparam = 128, nthreads = 1;
+	uint32_t bitlen = 1, nvals = 16, secparam = 128, nthreads = 1;
 
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 
 	// Reading the inputs in the /input folder and parsing them in a std::vector
 	std::vector<double> evaluator_data;
-	evaluator_data = get_input("../input/Evaluator");
+	evaluator_data = get_input("../input/Evaluator_4");
 	print_vector(evaluator_data, nvals, "Opening Evaluator data...");
 
 	seclvl seclvl = get_sec_lvl(secparam);
