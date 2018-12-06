@@ -27,7 +27,7 @@
 
 void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 	uint32_t* bitlen, uint32_t* nvals, uint32_t* secparam, std::string* address,
-	uint16_t* port, int32_t* test_op, uint32_t* test_bit, std::string* circuit, double* fpa, double* fpb) {
+	uint16_t* port, int32_t* test_op, uint32_t* test_bit, std::string* circuit) {
 
 	uint32_t int_role = 0, int_port = 0, int_testbit = 0;
 
@@ -40,10 +40,7 @@ void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 	{(void*) address, T_STR, "a", "IP-address, default: localhost", false, false },
 	{(void*) circuit, T_STR, "c", "circuit file name", false, false },
 	{(void*) &int_port, T_NUM, "p", "Port, default: 7766", false, false },
-	{(void*) test_op, T_NUM, "t", "Single test (leave out for all operations), default: off", false, false },
-	{(void*) fpa, T_DOUBLE, "x", "FP a", false, false },
-	{(void*) fpb, T_DOUBLE, "y", "FP b", false, false }
-
+	{(void*) test_op, T_NUM, "t", "Single test (leave out for all operations), default: off", false, false }
 	};
 
 	if (!parse_options(argcp, argvp, options,
@@ -65,7 +62,7 @@ void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 }
 
 void test_verilog_add64_SIMD(e_role role, const std::string& address, uint16_t port, seclvl seclvl, uint32_t nvals, uint32_t nthreads,
-	e_mt_gen_alg mt_alg, e_sharing sharing, double afp, double bfp) {
+	e_mt_gen_alg mt_alg, e_sharing sharing) {
 
 	// we operate on doubles, so set bitlen to 64 bits
 	uint32_t bitlen = 64;
@@ -76,35 +73,26 @@ void test_verilog_add64_SIMD(e_role role, const std::string& address, uint16_t p
 
 	BooleanCircuit* circ = (BooleanCircuit*) sharings[sharing]->GetCircuitBuildRoutine();
 
+
+	double x = 3.5;
+	double y = 5.5;
 	// point a uint64_t pointer to the two input floats without casting the content
-	uint64_t *aptr = (uint64_t*) &afp;
-	uint64_t *bptr = (uint64_t*) &bfp;
+	uint64_t *aptr = (uint64_t*) &x;
+	uint64_t *bptr = (uint64_t*) &y;
+	uint64_t avals = *aptr;
+	uint64_t bvals = *bptr;
 
-	// for this example we need at least 4 values
-	assert(nvals > 3);
 
-	// array of 64 bit values
-	uint64_t avals[nvals];
-	uint64_t bvals[nvals];
-
-	// fill array with input values nvals times.
-	std::fill(avals, avals + nvals, *aptr);
-	std::fill(bvals, bvals + nvals, *bptr);
-
-	// set some specific values differently for testing
-	bvals[1] = 0;
-	bvals[2] = *(uint64_t*) &afp;
-	avals[3] = *(uint64_t*) &bfp;
 
 	// SIMD input gates
-	share* ain = circ->PutSIMDINGate(nvals, avals, bitlen, SERVER);
-	share* bin = circ->PutSIMDINGate(nvals, bvals, bitlen, CLIENT);
+	share* ain = circ->PutINGate(avals, bitlen, SERVER);
+	share* bin = circ->PutINGate(bvals, bitlen, CLIENT);
 
 	// FP addition gate
-	share* sum = circ->PutFPGate(ain, bin, ADD, nvals, no_status);
-
+	share* sum = circ->PutFPGate(ain, bin, ADD, no_status);
+	share* sqrt_calc = circ->PutFPGate(sum, SQRT, no_status);
 	// output gate
-	share* res_out = circ->PutOUTGate(sum, ALL);
+	share* res_out = circ->PutOUTGate(sqrt_calc, ALL);
 
 	// run SMPC
 	party->ExecCircuit();
@@ -120,8 +108,7 @@ void test_verilog_add64_SIMD(e_role role, const std::string& address, uint16_t p
 		// dereference output value as double without casting the content
 		double val = *((double*) &out_vals[i]);
 
-		std::cout << "RES: " << val << " = " << *(double*) &avals[i] << " + " << *(double*) &bvals[i] << " | nv: " << out_nvals
-		<< " bitlen: " << out_bitlen << std::endl;
+		std::cout << "\nRES: " << val << "\n";
 	}
 }
 
@@ -129,7 +116,7 @@ void test_verilog_add64_SIMD(e_role role, const std::string& address, uint16_t p
 int main(int argc, char** argv) {
 
 	e_role role;
-	uint32_t bitlen = 1, nvals = 4, secparam = 128, nthreads = 1;
+	uint32_t bitlen = 1, nvals = 1, secparam = 128, nthreads = 1;
 
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
@@ -137,18 +124,16 @@ int main(int argc, char** argv) {
 	int32_t test_op = -1;
 	e_mt_gen_alg mt_alg = MT_OT;
 	uint32_t test_bit = 0;
-	double fpa = 0, fpb = 0;
 
 	read_test_options(&argc, &argv, &role, &bitlen, &nvals, &secparam, &address,
-		&port, &test_op, &test_bit, &circuit, &fpa, &fpb);
+		&port, &test_op, &test_bit, &circuit);
 
 	std::cout << std::fixed << std::setprecision(3);
-	std::cout << "double input values: " << fpa << " ; " << fpb << std::endl;
 
 	seclvl seclvl = get_sec_lvl(secparam);
 
 
-	test_verilog_add64_SIMD(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL, fpa, fpb);
+	test_verilog_add64_SIMD(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL);
 
 	return 0;
 }

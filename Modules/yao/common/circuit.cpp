@@ -65,17 +65,17 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// -----------------------------------
 
 	// FP substraction gate to remove mask mu_A from A + mu_a
-	// share* A = MatrixSubstraction(csp_in, eval_in, bc, nvals);
-	// share* result = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
-	share* zero_ac = ac->PutB2AGate(half);
-
-	share* result = CreateEmptyArray(zero_ac, nvals, ac);
+	share* A = MatrixSubstraction(csp_in, eval_in, bc, nvals);
+	L = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
 	
+	uint32_t n = sqrt(nvals);
+	share* LT = transpose(L, n, ac, bc, yc);
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
 
-	share* res_out = ac->PutOUTGate(result, ALL);
+
+	share* res_out = ac->PutOUTGate(LT, ALL);
 
 	// run SMPC
 	party->ExecCircuit();
@@ -205,4 +205,26 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 	}
 	L = ac->PutCombinerGate(L);
 	return L;
+}
+
+share* transpose(share *L, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+
+	/*Initial states of sharings.
+		L -> ARITH and combined
+	*/
+
+	share* temp = L;
+	uint32_t index1;
+	uint32_t index2;
+	temp = ac->PutSplitterGate(temp);
+	L = ac->PutSplitterGate(L);
+	for (int i = 0; i < n; i++){
+		for (int j=0; j<n; j++){
+			index1 = i*n+j;
+			index2 = j*n+i;
+			temp->set_wire_id(index1, L->get_wire_id(index2)); 
+		}
+	}
+	temp = ac->PutCombinerGate(temp);
+	return temp;
 }
