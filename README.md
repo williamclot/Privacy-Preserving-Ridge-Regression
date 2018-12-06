@@ -6,6 +6,17 @@ Semester Project - Eurecom 2018/2019
 
 <hr>
 
+## What is this project about?
+
+This project is following this [paper](https://ieeexplore.ieee.org/document/6547119) written by Valeria Nikolaenko, Udi Weinsberg, Stratis Ioannidis, Marc Joye, Dan Boneh
+& Nina Taft. This paper talks about a privacy preserving ridge regression which is using homomorphic encryption as well as garbled circuits between two parties.
+
+This project is using their paper to implement this hybrid method of computation to evaluate the performance of such a solution.
+
+## Motivations:
+
+This repository is submitted as a semester project at EURECOM proposed by Melek Önen and Beyza Bozdemir.
+
 ## Code Structure:
 
 Most of our work is based around the discovery of new methods like homomorphic encryption or garbled circuits. All the code that is related to the discovery of those methods can be found in `Modules/`. We can find in particular:
@@ -27,7 +38,7 @@ To execute the encryption with paillier homomorphic encryption you simply need p
 pip3 install phe
 ```
 
-### Compiling ABY:
+#### Compiling ABY:
 
 Compiling ABY clearly needs it's own section here. You will need ABY to be installed in one of the `include` folders during the linking phase of the compilation (we used `/usr/local/include`). ABY needs several libraries that are often not easy to find depending on your linux distribution. A easy solution we found to emulate an identical compilation environment is by using a Docker container.
 
