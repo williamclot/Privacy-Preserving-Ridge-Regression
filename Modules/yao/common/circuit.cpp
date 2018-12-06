@@ -67,14 +67,14 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// FP substraction gate to remove mask mu_A from A + mu_a
 	share* A = MatrixSubstraction(csp_in, eval_in, bc, nvals);
 	// share* result = SqurtApprox(half, half, 5, bitlen, ac, bc, yc);
-	L = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
+	share* result = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
 	
 
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
 
-	share* res_out = ac->PutOUTGate(L, ALL);
+	share* res_out = ac->PutOUTGate(result, ALL);
 
 	// run SMPC
 	party->ExecCircuit();
@@ -110,6 +110,7 @@ share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit 
 
 	/*  Initial states of sharings.
 		s_x -> ARITHM
+		out -> BOOL
 	*/
 
 	uint64_t zero = 0;
@@ -179,7 +180,6 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 		temp = bc->PutFPGate(temp, mul, SUB, no_status); //L[i*n+i] = (A[i*n+i] - mul) 
 
 		temp = SqurtApprox(temp, half, 5, bitlen, ac, bc, yc);
-		currentL = temp;
 		temp = ac->PutB2AGate(temp); //convert L[i*n+i] from bc to ac
 		L->set_wire_id(index, temp->get_wire_id(0)); //append the new values to L.
 
@@ -196,8 +196,11 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 			index = j*n+i;
 			temp = ExtractIndex(A, index, bitlen, ac, bc, yc); //A[j*n+i]
 			temp = bc->PutFPGate(temp, mul, SUB, no_status); //A[j*n+i]-mul
+			index = i*n+i;
+			currentL = ExtractIndex(L, index, bitlen, ac, bc, yc);
 			temp = bc->PutFPGate(temp, currentL, DIV, no_status);
 			temp = ac->PutB2AGate(temp); //convert bc to ac
+			index = j*n+i;
 			L->set_wire_id(index, temp->get_wire_id(0)); //append the new values to L.
 		}
 	}
