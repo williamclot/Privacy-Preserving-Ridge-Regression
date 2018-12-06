@@ -74,7 +74,6 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
 
-
 	share* res_out = ac->PutOUTGate(LT, ALL);
 
 	// run SMPC
