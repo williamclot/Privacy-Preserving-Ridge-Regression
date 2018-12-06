@@ -22,3 +22,5 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 share* SqurtApprox(share *s_x, share *half, uint32_t step, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc); 
 
 share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
+
+share* transpose(share *L, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
