@@ -10,8 +10,12 @@ import pandas as pd
 from phe import paillier
 import numpy as np
 import math
+
 from termcol import termcol as tc
 from termcol import utils as utils
+
+import subprocess
+import sys
 
 ##---------* Functions *----------##
 
@@ -44,7 +48,10 @@ class CSP:
         else:
             self.Amask = Amask
             self.bmask = bmask
-        print(Amask.size)
         
         utils.ParseToFile(self.Amask, "garbled_circuit/inputs/Amask")
         utils.ParseToFile(self.bmask, "garbled_circuit/inputs/bmask")
+
+        # subprocess.call("./garbled_circuit/build/CSP")
+
+
