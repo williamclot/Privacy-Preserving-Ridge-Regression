@@ -6,7 +6,7 @@
 /.vscode
 /References
 .DS_Store
-/inputs
+inputs/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
