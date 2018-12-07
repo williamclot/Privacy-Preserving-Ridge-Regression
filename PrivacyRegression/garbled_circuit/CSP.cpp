@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 
 	// Hardcoded server role
 	e_role role = SERVER;
-	uint32_t bitlen = 1, nvals = 64, secparam = 128, nthreads = 1;
+	uint32_t bitlen = 1, nvals = 25, secparam = 128, nthreads = 1;
 
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
@@ -36,10 +36,10 @@ int main(int argc, char** argv) {
 	std::vector<double> Amask;
 	std::vector<double> bmask;
 	Amask = get_input("../inputs/Amask");
-	bmask = get_input("../inputs/bmask");
-	int n = sqrt(nvals);
+	// bmask = get_input("../inputs/bmask");
+	// int n = sqrt(nvals);
 	print_vector(Amask, nvals, "Opening CSP data (Amask)...");
-	print_vector(bmask, n, "Opening CSP data (bmask)...");
+	// print_vector(bmask, n, "Opening CSP data (bmask)...");
 
 	seclvl seclvl = get_sec_lvl(secparam);
 

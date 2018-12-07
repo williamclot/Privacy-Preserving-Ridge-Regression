@@ -49,7 +49,7 @@ def prepareValues(train_frac=0.8, verbose=False):
     # Extracting useful data (X, Y)
     data_lenght = dataset.shape[0]
     Y = dataset[['Strength']]
-    X = dataset.drop(columns=['Strength'])
+    X = dataset.drop(columns=['Strength', 'Fine Aggregate', 'Fly Ash', 'Blast Furnace Slag'])
     # Separation between train dataset and test dataset with train_frac
     index_separation = int(data_lenght * train_frac)
     Xtrain = X.iloc[:index_separation]

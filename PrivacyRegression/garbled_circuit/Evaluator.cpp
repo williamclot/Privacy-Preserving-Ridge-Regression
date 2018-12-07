@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 	
 	// Hardcoded client role
 	e_role role = CLIENT;
-	uint32_t bitlen = 1, nvals = 64, secparam = 128, nthreads = 1;
+	uint32_t bitlen = 1, nvals = 25, secparam = 128, nthreads = 1;
 
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
@@ -36,10 +36,10 @@ int main(int argc, char** argv) {
 	std::vector<double> muA;
 	std::vector<double> mub;
 	muA = get_input("../inputs/muA");
-	mub = get_input("../inputs/mub");
+	// mub = get_input("../inputs/mub");
 	int n = sqrt(nvals);
 	print_vector(muA, nvals, "Opening Evaluator data (muA)...");
-	print_vector(mub, n, "Opening Evaluator data (mub)...");
+	// print_vector(mub, n, "Opening Evaluator data (mub)...");
 
 
 	seclvl seclvl = get_sec_lvl(secparam);
