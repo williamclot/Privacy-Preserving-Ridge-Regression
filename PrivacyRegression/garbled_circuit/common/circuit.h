@@ -27,7 +27,7 @@ share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit 
 
 share* Transpose(share *L, uint32_t n, ArithmeticCircuit *ac);
 
-share* BackSubstitutionLower(share* L, share* b, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
+share* ForwardSubstitution(share* L, share* b, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
 
-share* BackSubstitutionUpper(share* LT, share* Y, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
+share* BackSubstitution(share* LT, share* Y, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
 #endif

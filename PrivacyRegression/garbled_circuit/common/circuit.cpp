@@ -90,11 +90,11 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 
 	// First back substitution
 	b = ac->PutB2AGate(b);
-	share* Y = BackSubstitutionLower(L, b, zero_share, n, bitlen,  ac, bc, yc);
+	share* Y = ForwardSubstitution(L, b, zero_share, n, bitlen,  ac, bc, yc);
 	
 	// Second back substitution
 	share* LT = Transpose(L, n, ac);
-	share* beta = BackSubstitutionUpper(LT, Y, zero_share, n, bitlen, ac, bc, yc);
+	share* beta = BackSubstitution(LT, Y, zero_share, n, bitlen, ac, bc, yc);
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
@@ -256,7 +256,7 @@ share* Transpose(share* L, uint32_t n, ArithmeticCircuit *ac){
 	return temp;
 }
 
-share* BackSubstitutionLower(share* L, share* b, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+share* ForwardSubstitution(share* L, share* b, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 
 	// initializing a vector of zeros (same size as b)
 	share* Y = b;
@@ -309,7 +309,7 @@ share* BackSubstitutionLower(share* L, share* b, share* zero_share, uint32_t n, 
 	return Y;
 }
 
-share* BackSubstitutionUpper(share* LT, share* Y, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+share* BackSubstitution(share* LT, share* Y, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 
 	// initializing a vector of zeros (same size as b)
 	share* beta = Y;
