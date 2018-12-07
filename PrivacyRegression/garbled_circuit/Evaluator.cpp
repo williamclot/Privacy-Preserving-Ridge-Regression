@@ -36,15 +36,15 @@ int main(int argc, char** argv) {
 	std::vector<double> muA;
 	std::vector<double> mub;
 	muA = get_input("../inputs/muA");
-	// mub = get_input("../inputs/mub");
+	mub = get_input("../inputs/mub");
 	int n = sqrt(nvals);
 	print_vector(muA, nvals, "Opening Evaluator data (muA)...");
-	// print_vector(mub, n, "Opening Evaluator data (mub)...");
+	print_vector(mub, n, "Opening Evaluator data (mub)...");
 
 
 	seclvl seclvl = get_sec_lvl(secparam);
 
-	test_circuit(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL, muA);
+	test_circuit(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL, muA, mub);
 
 	return 0;
 }

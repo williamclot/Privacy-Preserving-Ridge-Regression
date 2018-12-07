@@ -14,7 +14,7 @@
 #include "utils.h"
 
 void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl, uint32_t nvals, uint32_t nthreads,
-	e_mt_gen_alg mt_alg, e_sharing sharing, std::vector<double> data) {
+	e_mt_gen_alg mt_alg, e_sharing sharing, std::vector<double> A_data, std::vector<double> b_data) {
 
 	// we operate on doubles, so set bitlen to 64 bits
 	uint32_t bitlen = 64;
@@ -31,14 +31,28 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// DATA FORMATTING
 	// -----------------------------------
 
-	uint64_t input_csp[nvals];
-	uint64_t input_eval[nvals];
+	uint32_t n = sqrt(nvals);
+
+	// Data formating for A and muA
+	uint64_t vec_Amask[nvals];
+	uint64_t vec_muA[nvals];
 
 	for(int i = 0; i < nvals; i++){
-		double value = data[i];
+		double value = A_data[i];
 		uint64_t *valuetr = (uint64_t*) &value;
-		input_csp[i] = *valuetr;
-		input_eval[i] = *valuetr;
+		vec_Amask[i] = *valuetr;
+		vec_muA[i] = *valuetr;
+	}
+
+	// Data formating for b and mub
+	uint64_t vec_bmask[n];
+	uint64_t vec_mub[n];
+
+	for(int i = 0; i < n; i++){
+		double value = b_data[i];
+		uint64_t *valuetr = (uint64_t*) &value;
+		vec_bmask[i] = *valuetr;
+		vec_mub[i] = *valuetr;
 	}
 
 	// Putting a vector of zeros to initiate Lower decomposition of cholesky
@@ -54,8 +68,10 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// -----------------------------------
 
 	// SIMD input gates
-	share* csp_in = bc->PutSIMDINGate(nvals, input_csp, bitlen, SERVER); // A + mu_a
-	share* eval_in = bc->PutSIMDINGate(nvals, input_eval, bitlen, CLIENT); // mu_a
+	share* Amask = bc->PutSIMDINGate(nvals, vec_Amask, bitlen, SERVER); // A + muA
+	share* bmask = bc->PutSIMDINGate(n, vec_bmask, bitlen, SERVER); // b + mub
+	share* muA = bc->PutSIMDINGate(nvals, vec_muA, bitlen, CLIENT); // muA
+	share* mub = bc->PutSIMDINGate(n, vec_mub, bitlen, CLIENT); // mub
 
 	// Reference inputs (0.5, 0, {0, 0,... , 0})
 	share* L = ac->PutSIMDINGate(nvals, zeros, bitlen, SERVER); // zeros
@@ -66,22 +82,24 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// -----------------------------------
 
 	// FP substraction gate to remove mask mu_A from A + mu_a
-	share* A = MatrixSubstraction(csp_in, eval_in, bc, nvals);
+	share* A = MatrixSubstraction(Amask, muA, bc, nvals);
+	share* b = MatrixSubstraction(bmask, mub, bc, n);
+
+	// Cholesky decomposition of A
 	L = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
+
+	// First back substitution
+	b = ac->PutB2AGate(b);
+	share* Y = BackSubstitutionLower(L, b, zero_share, n, bitlen,  ac, bc, yc);
 	
-	uint32_t n = sqrt(nvals);
-	std::vector<uint64_t> Yvals(n);
-	for (int i = 0; i < n; i++) {
-		int y = 5;
-		Yvals[i] = y;
-	}
-	share* LT = transpose(L, n, ac, bc, yc);
-	//share* Y = bc->PutSIMDINGate(n, Yvals.data(), 32, SERVER);
+	// Second back substitution
+	share* LT = Transpose(L, n, ac);
+	share* beta = BackSubstitutionUpper(LT, Y, zero_share, n, bitlen, ac, bc, yc);
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
 
-	share* res_out = ac->PutOUTGate(LT, ALL);
+	share* res_out = ac->PutOUTGate(beta, ALL);
 
 	// run SMPC
 	party->ExecCircuit();
@@ -92,7 +110,7 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	res_out->get_clear_value_vec(&out_vals, &out_bitlen, &out_nvals);
 	if (role == CLIENT) {
 		// print every output
-		for (uint32_t i = 0; i < nvals; i++) {
+		for (uint32_t i = 0; i < out_nvals; i++) {
 			// dereference output value as double without casting the content
 			double val = *((double*) &out_vals[i]);
 			std::cout << val << std::endl;
@@ -157,6 +175,7 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 		A -> BOOL
 		L -> ARITH
 		zero_share -> ARITH
+		output -> ARITH
 	*/
 
 	int n = sqrt(nvals); // number of lines (OK)
@@ -213,10 +232,12 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 	return L;
 }
 
-share* transpose(share *L, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+share* Transpose(share* L, uint32_t n, ArithmeticCircuit *ac){
+	/*~~~~ returns a share with the transposition of L (upper matrix) ~~~~~*/
 
 	/*Initial states of sharings.
 		L -> ARITH and combined
+		output -> ARITH
 	*/
 
 	share* temp = L;
@@ -235,76 +256,18 @@ share* transpose(share *L, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc
 	return temp;
 }
 
+share* BackSubstitutionLower(share* L, share* b, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 
-
-share* back_substitution_upper(share* LT, share* Y, share* zero_share, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
-
-
-	uint32_t bitlen = 64;
-
-	LT = ac->PutSplitterGate(LT);
+	// initializing a vector of zeros (same size as b)
+	share* Y = b;
 	Y = ac->PutSplitterGate(Y);
-
-	// initializing a vector of zeros
-	share* beta = zero_share;
-
-	// beta[d-1]=Y[d-1]/LT[(d-1)*d+(d-1)]
-	uint32_t index = n-1;
-	share* temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
-	index = (n-1) * n + (n-1);
-	share* temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
-	share* temp = bc->PutFPGate(temp1, temp2, DIV, no_status);
-	temp = ac->PutB2AGate(temp);
-	index = n-1;
-	beta->set_wire_id(index, temp->get_wire_id(0));
-
-	for (int i = n-2; i > -1 ; i--){
-		for (int j = n-1; j > i; j--){
-
-			// Y[i]=Y[i]-(LT[i*n+j]*beta[j])
-			
-			index = i*n+j;
-			temp1 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
-			index = j;
-			temp2 = ExtractIndex(beta, index, bitlen, ac, bc, yc);
-			temp2 = bc->PutFPGate(temp1, temp2, MUL, no_status);
-			index = i;
-			temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
-			temp = bc->PutFPGate(temp1, temp2, SUB, no_status);
-			temp = ac->PutB2AGate(temp);
-			index = i;
-			Y->set_wire_id(index, temp->get_wire_id(0));
-		}
-
-
-	//beta[i]=Y[i]/LT[i*n+i]
-	index = i;
-	temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
-	index = i*n+i;
-	temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
-	temp = bc->PutFPGate(temp1,temp2, DIV, no_status);
-	temp = ac->PutB2AGate(temp);
-	index = i;
-	beta->set_wire_id(index, temp->get_wire_id(0));
+	for (int i=0; i<n; i++){
+		Y->set_wire_id(i, zero_share->get_wire_id(0));
 	}
-
-beta = ac->PutCombinerGate(beta);
-return beta;
-
-}
-
-
-share* back_substitution_lower(share* L, share* b, share* zero_share, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
-
-
-	uint32_t bitlen = 64;
-
 
 	L = ac->PutSplitterGate(L);
 	b = ac->PutSplitterGate(b);
 
-	// initializing a vector of zeros
-	share* Y = zero_share;
 	// Y[0]=b[0]/L[0]
 	uint32_t index = 0;
 	share* temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
@@ -322,28 +285,81 @@ share* back_substitution_lower(share* L, share* b, share* zero_share, uint32_t n
 			temp1 = ExtractIndex(L, index, bitlen, ac, bc, yc);
 			index = j;
 			temp2 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
-			temp2 = bc->PutFPGate(temp1, temp2, MUL, no_status);
+			temp2 = bc->PutFPGate(temp1, temp2, MUL);
 			index = i;
 			temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
-			temp = bc->PutFPGate(temp1, temp2, SUB, no_status);
+			temp = bc->PutFPGate(temp1, temp2, SUB);
 			temp = ac->PutB2AGate(temp);
 			index = i;
 			b->set_wire_id(index, temp->get_wire_id(0));
 		}
 
+		//Y[i]=b[i]/L[i*n+i]
+		index = i;
+		temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
+		index = i*n+i;
+		temp2 = ExtractIndex(L, index, bitlen, ac, bc, yc);
+		temp = bc->PutFPGate(temp1,temp2, DIV);
+		temp = ac->PutB2AGate(temp);
+		index = i;
+		Y->set_wire_id(index, temp->get_wire_id(0));
+	}
 
-	//Y[i]=b[i]/L[i*n+i]
+	Y = ac->PutCombinerGate(Y);
+	return Y;
+}
+
+share* BackSubstitutionUpper(share* LT, share* Y, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+
+	// initializing a vector of zeros (same size as b)
+	share* beta = Y;
+	beta = ac->PutSplitterGate(beta);
+	for (int i=0; i<n; i++){
+		beta->set_wire_id(i, zero_share->get_wire_id(0));
+	}
+
+	LT = ac->PutSplitterGate(LT);
+	Y = ac->PutSplitterGate(Y);
+
+	// beta[d-1]=Y[d-1]/LT[(d-1)*d+(d-1)]
+	uint32_t index = n-1;
+	share* temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
+	index = (n-1)*(n+1);
+	share* temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
+	share* temp = bc->PutFPGate(temp1, temp2, DIV, no_status);
+	temp = ac->PutB2AGate(temp);
+	index = n-1;
+	beta->set_wire_id(index, temp->get_wire_id(0));
+
+	for (int i = n-2; i > -1 ; i--){
+		for (int j = n-1; j > i; j--){
+			// Y[i]=Y[i]-(LT[i*n+j]*beta[j])
+			index = i*n+j;
+			temp1 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
+			index = j;
+			temp2 = ExtractIndex(beta, index, bitlen, ac, bc, yc);
+			temp2 = bc->PutFPGate(temp1, temp2, MUL, no_status);
+			index = i;
+			temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
+			temp = bc->PutFPGate(temp1, temp2, SUB, no_status);
+			temp = ac->PutB2AGate(temp);
+			index = i;
+			Y->set_wire_id(index, temp->get_wire_id(0));
+		}
+
+	//beta[i]=Y[i]/LT[i*n+i]
 	index = i;
-	temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
+	temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
 	index = i*n+i;
-	temp2 = ExtractIndex(L, index, bitlen, ac, bc, yc);
+	temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
 	temp = bc->PutFPGate(temp1,temp2, DIV, no_status);
 	temp = ac->PutB2AGate(temp);
 	index = i;
-	Y->set_wire_id(index, temp->get_wire_id(0));
+	beta->set_wire_id(index, temp->get_wire_id(0));
 	}
 
-Y = ac->PutCombinerGate(Y);
-return Y;
+beta = ac->PutCombinerGate(beta);
+return beta;
 
 }
+

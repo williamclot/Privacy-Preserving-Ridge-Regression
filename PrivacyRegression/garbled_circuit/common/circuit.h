@@ -11,8 +11,11 @@
 #include <iomanip>
 #include <iostream>
 
+#ifndef _CIRCUIT_
+#define _CIRCUIT_
+
 void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl, uint32_t nvals, uint32_t nthreads,
-	e_mt_gen_alg mt_alg, e_sharing sharing, std::vector<double> data);
+	e_mt_gen_alg mt_alg, e_sharing sharing, std::vector<double> A_data, std::vector<double> b_data);
 
 share* MatrixSubstraction(share *s_A, share *s_B, BooleanCircuit *bc, uint32_t nvals);
 
@@ -22,8 +25,9 @@ share* SqurtApprox(share *s_x, share *half, uint32_t step, ArithmeticCircuit *ac
 
 share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
 
-share* transpose(share *L, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
+share* Transpose(share *L, uint32_t n, ArithmeticCircuit *ac);
 
-share* back_substitution_lower(share* L, share* b, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
+share* BackSubstitutionLower(share* L, share* b, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
 
-share* back_substitution_upper(share* LY, share* Y, share* zero_share, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
+share* BackSubstitutionUpper(share* LT, share* Y, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
+#endif
