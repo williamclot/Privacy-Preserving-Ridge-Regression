@@ -7,6 +7,7 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream>
+#include <math.h>
 
 // My Libraries
 #include "common/circuit.h"
@@ -18,7 +19,7 @@ int main(int argc, char** argv) {
 
 	// Hardcoded server role
 	e_role role = SERVER;
-	uint32_t bitlen = 1, nvals = 16, secparam = 128, nthreads = 1;
+	uint32_t bitlen = 1, nvals = 64, secparam = 128, nthreads = 1;
 
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
@@ -32,10 +33,13 @@ int main(int argc, char** argv) {
 		&port, &test_op, &test_bit, &circuit);
 
 	// Reading the inputs in the /input folder and parsing them in a std::vector
-	std::vector<double> csp_data;
+	std::vector<double> Amask;
+	std::vector<double> bmask;
 	Amask = get_input("../inputs/Amask");
-	// bmask = get_intput("../input/CSP_b");
-	print_vector(csp_data, nvals, "Opening CSP data...");
+	bmask = get_input("../inputs/bmask");
+	int n = sqrt(nvals);
+	print_vector(Amask, nvals, "Opening CSP data (Amask)...");
+	print_vector(bmask, n, "Opening CSP data (bmask)...");
 
 	seclvl seclvl = get_sec_lvl(secparam);
 

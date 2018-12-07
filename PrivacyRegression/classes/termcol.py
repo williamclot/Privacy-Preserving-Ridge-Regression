@@ -15,6 +15,7 @@ class utils:
         """Parses List to destination file (one element per line)"""
         file = open(destination, "w")
         for element in np.nditer(List):
+            #file = file / 10^7
             file.write(str(np.round(element, 4))+'\n')
         file.close
         

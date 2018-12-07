@@ -41,7 +41,7 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	}
 
 	// Putting a vector of zeros to initiate Lower decomposition of cholesky
-	uint64_t zeros[nvals] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint64_t zeros[nvals] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	uint64_t zero = 0;
 
 	// Using 0.5 for the sqrt approximation
@@ -69,7 +69,13 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	L = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
 	
 	uint32_t n = sqrt(nvals);
+	std::vector<uint64_t> Yvals(n);
+	for (int i = 0; i < n; i++) {
+		int y = 5;
+		Yvals[i] = y;
+	}
 	share* LT = transpose(L, n, ac, bc, yc);
+	//share* Y = bc->PutSIMDINGate(n, Yvals.data(), 32, SERVER);
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------

@@ -7,6 +7,7 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream>
+#include <math.h>
 
 // My Libraries
 #include "common/circuit.h"
@@ -18,7 +19,7 @@ int main(int argc, char** argv) {
 	
 	// Hardcoded client role
 	e_role role = CLIENT;
-	uint32_t bitlen = 1, nvals = 16, secparam = 128, nthreads = 1;
+	uint32_t bitlen = 1, nvals = 64, secparam = 128, nthreads = 1;
 
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
@@ -32,17 +33,18 @@ int main(int argc, char** argv) {
 		&port, &test_op, &test_bit, &circuit);
 
 	// Reading the inputs in the /input folder and parsing them in a std::vector
-	std::vector<double> evaluator_data;
+	std::vector<double> muA;
+	std::vector<double> mub;
 	muA = get_input("../inputs/muA");
 	mub = get_input("../inputs/mub");
-
-	print_vector(muA, nvals, "Opening Evaluator data...");
-	print_vector(mub, nvals, "Opening Evaluator data...");
+	int n = sqrt(nvals);
+	print_vector(muA, nvals, "Opening Evaluator data (muA)...");
+	print_vector(mub, n, "Opening Evaluator data (mub)...");
 
 
 	seclvl seclvl = get_sec_lvl(secparam);
 
-	test_circuit(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL, evaluator_data);
+	test_circuit(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL, muA);
 
 	return 0;
 }
