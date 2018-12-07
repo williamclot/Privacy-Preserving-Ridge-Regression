@@ -13,11 +13,12 @@ import math
 import random
 
 from termcol import termcol as tc
+from termcol import utils as utils
 
 ##---------* Functions *----------##
 
 class Evaluator:
-    def __init__(self, public_key, ci_list, lamb, verbose=False):
+    def __init__(self, public_key, ci_list, lamb, verbose=False, encrypt=False):
         # Programm parameters
         self.verbose = verbose
         if (self.verbose): print(tc.WARNING+"Initiating the Evaluator..."+tc.ENDC)
@@ -36,13 +37,20 @@ class Evaluator:
             self.b_enc += ci_list[i][1]
 
         # clambda
-        clambda = self.encrypt(np.eye(len(self.A_enc))*lamb)
+        if(encrypt):
+            clambda = self.encrypt(np.eye(len(self.A_enc))*lamb)
+        else:
+            clambda = np.eye(len(self.A_enc))*lamb
+
         self.A_enc += clambda
 
         #apply the masks μA and μb on A and b
         self.muA , self.mub = self.getMuA_Mub(self.A_enc,self.b_enc)
         # self.muA_enc , self.mub_enc = self.encrypt(self.muA) , self.encrypt(self.mub)
-        self.Atild , self.btild= self.A_enc + self.muA , self.b_enc + self.mub
+        self.Amask , self.bmask = self.A_enc + self.muA , self.b_enc + self.mub
+
+        utils.ParseToFile(self.muA, "garbled_circuit/inputs/muA")
+        utils.ParseToFile(self.mub, "garbled_circuit/inputs/mub")
 
 
     def encrypt(self, A):
@@ -54,7 +62,7 @@ class Evaluator:
     def getMuA_Mub(self, A_enc, b_enc):
         '''return E(A+μA), E(b+μb)'''
         muA , mub = np.zeros((len(A_enc),len(A_enc[0]))) , np.zeros((len(b_enc),len(b_enc[0])))
-        add_rand = lambda val: val + random.random()*10000
+        add_rand = lambda val: val + random.random()*100
         vector_func = np.vectorize(add_rand)
         return vector_func(muA),vector_func(mub)
 

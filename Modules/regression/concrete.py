@@ -48,7 +48,6 @@ def prepareValues(train_frac=0.8, verbose=False):
 
     return Xtrain, Ytrain, Xtest, Ytest
 
-
 # Preparing the values and initiating the regression class
 # ----------------------------------------------------------
 X, Y, Xtest, Ytest = prepareValues(verbose=True)
@@ -61,8 +60,8 @@ Regression.train_model()
 print(tc.OKGREEN+ "  Training phase of the model finished!"+ tc.ENDC)
 print(tc.OKGREEN+ "  Output model of the training (beta) :"+ tc.ENDC)
 print(Regression.beta)
-# print(tc.WARNING+ "A computed after training :"+ tc.ENDC)
-# print(Regression.A)
+print(tc.WARNING+ "A computed after training :"+ tc.ENDC)
+print(Regression.A)
 
 # Training the model with X and Y sets
 # -------------------------------------

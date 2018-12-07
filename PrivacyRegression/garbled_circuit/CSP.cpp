@@ -33,12 +33,13 @@ int main(int argc, char** argv) {
 
 	// Reading the inputs in the /input folder and parsing them in a std::vector
 	std::vector<double> csp_data;
-	csp_data = get_input("../input/CSP_4");
+	Amask = get_input("../inputs/Amask");
+	// bmask = get_intput("../input/CSP_b");
 	print_vector(csp_data, nvals, "Opening CSP data...");
 
 	seclvl seclvl = get_sec_lvl(secparam);
 
-	test_circuit(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL, csp_data);
+	test_circuit(role, address, port, seclvl, nvals, nthreads, mt_alg, S_BOOL, Amask);
 
 	return 0;
 }

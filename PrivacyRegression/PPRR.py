@@ -19,16 +19,19 @@ import Users
 import CSP
 
 from termcol import termcol as tc
+from termcol import utils as utils
 
-##--------* Global variables *----------##
+
+##--------* Global parameters *----------##
 
 VERBOSE = True
 CSP_Key = ''
 LAMBDA = 0.1
+ENCRYPT = False
 
 ##--------* Initiating the database *---------##
 
-def prepareValues(train_frac=0.01, verbose=False):
+def prepareValues(train_frac=0.8, verbose=False):
     '''
     Function to prepare the values of the dataset before calling the Regression Class
     '''
@@ -39,9 +42,9 @@ def prepareValues(train_frac=0.01, verbose=False):
     if(verbose): print(dataset.head(5))
     
     # Randomizing the rows of the dataset (separation between training a testing dataset)
-    # print(tc.HEADER + "Shuffling the index of the dataset..."+tc.ENDC)
-    # dataset = dataset.sample(frac=1).reset_index(drop=True)
-    # if(verbose): print(dataset.head(5))
+    print(tc.HEADER + "Shuffling the index of the dataset..."+tc.ENDC)
+    dataset = dataset.sample(frac=1).reset_index(drop=True)
+    if(verbose): print(dataset.head(5))
 
     # Extracting useful data (X, Y)
     data_lenght = dataset.shape[0]
@@ -63,19 +66,14 @@ Xtrain, Ytrain, Xtest, Ytest = prepareValues(verbose=VERBOSE)
 
 ##--------* Initiating the actors *---------##
 
-
-CSP = CSP.CSP(verbose=VERBOSE)
+CSP = CSP.CSP(verbose=VERBOSE, encrypt=ENCRYPT)
 CSP_Key = CSP.public_key #Getting the generated public key
 
-Users = Users.Users(CSP_Key, Xtrain, Ytrain, verbose=VERBOSE)
-Evaluator = Evaluator.Evaluator(CSP_Key, Users.c, LAMBDA, verbose=VERBOSE)
-A_enc = Evaluator.A_enc
-A_dec = CSP.decrypt(A_enc)
-# print(A_dec)
-Atild = Evaluator.Atild
-Atild_dec = CSP.decrypt(Atild)
-AmuA = A_dec + Evaluator.muA
-# print('decrypted matrx:',Atild_dec)
-# print('original matrix', AmuA)
+Users = Users.Users(CSP_Key, Xtrain, Ytrain, verbose=VERBOSE, encrypt=ENCRYPT)
+Evaluator = Evaluator.Evaluator(CSP_Key, Users.c, LAMBDA, verbose=VERBOSE, encrypt=ENCRYPT)
+
+# Once Evaluator has summed all the contributions and masked the result we send it to CSP
+CSP.receiveEvaluator(Evaluator.Amask,  Evaluator.bmask)
+
 
 
