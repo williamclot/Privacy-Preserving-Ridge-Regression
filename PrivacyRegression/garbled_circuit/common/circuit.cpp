@@ -227,3 +227,109 @@ share* transpose(share *L, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc
 	temp = ac->PutCombinerGate(temp);
 	return temp;
 }
+
+
+
+share* back_substitution_upper(share* LT, share* Y, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+
+	LT = ac->PutSplitterGate(LT);
+	Y = ac->PutSplitterGate(Y);
+
+	share* beta = ac->PutSIMDINGate(n, zeros, bitlen, SERVER);
+
+	// beta[d-1]=Y[d-1]/LT[(d-1)*d+(d-1)]
+	uint32_t index = n-1
+	share* temp1 = Extract_index(Y, index, bitlen, ac, bc, yc);
+	index = (n-1) * n + (n-1);
+	share* temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
+	share* temp = PutFPGate(temp1, temp2, DIV, no_status);
+	temp = ac->PutB2AGate(temp);
+	index = n -1;
+	beta->set_wire_id(index, temp->get_wire_id(0));
+
+	for (int i = n-2; i > -1 ; i--){
+		for (int j = n-1; j > i; j--){
+
+			// Y[i]=Y[i]-(LT[i*d+j]*beta[j])
+			
+			index = i*n+j;
+			temp1 = Extract_index(LT, index, bitlen, ac, bc, yc);
+			index = j;
+			temp2 = ExtractIndex(beta, index, bitlen, ac, bc, yc);
+			temp2 = PutFPGate(temp1, temp2, MUL, no_status);
+			index = i;
+			temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
+			temp = PutFPGate(temp1, temp2, SUB, no_status);
+			temp = ac->PutB2AGate(temp);
+			index = i;
+			Y->set_wire_id(index, temp->get_wire_id(0));
+		}
+
+
+	//beta[i]=Y[i]/LT[i*d+i]
+	index = i;
+	temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
+	index = i*n+i
+	temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
+	temp = PutFPGate(temp1,temp2, DIV, no_status);
+	temp = ac->PutB2AGate(temp);
+	index = i;
+	beta->set_wire_id(index, temp->get_wire_id(0));
+	}
+
+beta = ac->PutCombinerGate(beta);
+return beta;
+
+}
+
+
+share* back_substitution_lower(share* L, share* b, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+
+	L = ac->PutSplitterGate(LT);
+	b = ac->PutSplitterGate(Y);
+
+
+	share* Y = ac->PutSIMDINGate(n, zeros, bitlen, SERVER);
+	
+	// Y[0]=b[0]/L[0]
+	uint32_t index = 0;
+	share* temp1 = Extract_index(b, index, bitlen, ac, bc, yc);
+	share* temp2 = ExtractIndex(L, index, bitlen, ac, bc, yc);
+	share* temp = PutFPGate(temp1, temp2, DIV, no_status);
+	temp = ac->PutB2AGate(temp);
+	Y->set_wire_id(index, temp->get_wire_id(0));
+
+	for (int i = 1; i < n ; i++){
+		for (int j = 0; j < i; j++){
+
+			//  b[i]=b[i]-(L[i*d+j]*Y[j])
+			
+			index = i*n+j;
+			temp1 = Extract_index(L, index, bitlen, ac, bc, yc);
+			index = j;
+			temp2 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
+			temp2 = PutFPGate(temp1, temp2, MUL, no_status);
+			index = i;
+			temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
+			temp = PutFPGate(temp1, temp2, SUB, no_status);
+			temp = ac->PutB2AGate(temp);
+			index = i;
+			b->set_wire_id(index, temp->get_wire_id(0));
+		}
+
+
+	//Y[i]=b[i]/L[i*d+i]
+	index = i;
+	temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
+	index = i*n+i
+	temp2 = ExtractIndex(L, index, bitlen, ac, bc, yc);
+	temp = PutFPGate(temp1,temp2, DIV, no_status);
+	temp = ac->PutB2AGate(temp);
+	index = i;
+	Y->set_wire_id(index, temp->get_wire_id(0));
+	}
+
+Y = ac->PutCombinerGate(beta);
+return Y;
+
+}
