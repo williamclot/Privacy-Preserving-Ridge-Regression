@@ -23,3 +23,7 @@ share* SqurtApprox(share *s_x, share *half, uint32_t step, ArithmeticCircuit *ac
 share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
 
 share* transpose(share *L, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
+
+share* back_substitution_lower(share* L, share* b, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);
+
+share* back_substitution_upper(share* LY, share* Y, share* zero_share, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc);

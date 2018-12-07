@@ -41,7 +41,7 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	}
 
 	// Putting a vector of zeros to initiate Lower decomposition of cholesky
-	uint64_t zeros[nvals] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint64_t zeros[nvals] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	uint64_t zero = 0;
 
 	// Using 0.5 for the sqrt approximation
@@ -69,7 +69,13 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	L = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
 	
 	uint32_t n = sqrt(nvals);
+	std::vector<uint64_t> Yvals(n);
+	for (int i = 0; i < n; i++) {
+		int y = 5;
+		Yvals[i] = y;
+	}
 	share* LT = transpose(L, n, ac, bc, yc);
+	//share* Y = bc->PutSIMDINGate(n, Yvals.data(), 32, SERVER);
 
 	// CIRCUIT OUTPUTS
 	// -----------------------------------
@@ -226,4 +232,117 @@ share* transpose(share *L, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc
 	}
 	temp = ac->PutCombinerGate(temp);
 	return temp;
+}
+
+
+
+share* back_substitution_upper(share* LT, share* Y, share* zero_share, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+
+
+	uint32_t bitlen = 64;
+
+	LT = ac->PutSplitterGate(LT);
+	Y = ac->PutSplitterGate(Y);
+
+	// initializing a vector of zeros
+	share* beta = zero_share;
+
+	// beta[d-1]=Y[d-1]/LT[(d-1)*d+(d-1)]
+	uint32_t index = n-1;
+	share* temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
+	index = (n-1) * n + (n-1);
+	share* temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
+	share* temp = bc->PutFPGate(temp1, temp2, DIV, no_status);
+	temp = ac->PutB2AGate(temp);
+	index = n-1;
+	beta->set_wire_id(index, temp->get_wire_id(0));
+
+	for (int i = n-2; i > -1 ; i--){
+		for (int j = n-1; j > i; j--){
+
+			// Y[i]=Y[i]-(LT[i*n+j]*beta[j])
+			
+			index = i*n+j;
+			temp1 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
+			index = j;
+			temp2 = ExtractIndex(beta, index, bitlen, ac, bc, yc);
+			temp2 = bc->PutFPGate(temp1, temp2, MUL, no_status);
+			index = i;
+			temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
+			temp = bc->PutFPGate(temp1, temp2, SUB, no_status);
+			temp = ac->PutB2AGate(temp);
+			index = i;
+			Y->set_wire_id(index, temp->get_wire_id(0));
+		}
+
+
+	//beta[i]=Y[i]/LT[i*n+i]
+	index = i;
+	temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
+	index = i*n+i;
+	temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
+	temp = bc->PutFPGate(temp1,temp2, DIV, no_status);
+	temp = ac->PutB2AGate(temp);
+	index = i;
+	beta->set_wire_id(index, temp->get_wire_id(0));
+	}
+
+beta = ac->PutCombinerGate(beta);
+return beta;
+
+}
+
+
+share* back_substitution_lower(share* L, share* b, share* zero_share, uint32_t n, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+
+
+	uint32_t bitlen = 64;
+
+
+	L = ac->PutSplitterGate(L);
+	b = ac->PutSplitterGate(b);
+
+	// initializing a vector of zeros
+	share* Y = zero_share;
+	// Y[0]=b[0]/L[0]
+	uint32_t index = 0;
+	share* temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
+	share* temp2 = ExtractIndex(L, index, bitlen, ac, bc, yc);
+	share* temp = bc->PutFPGate(temp1, temp2, DIV, no_status);
+	temp = ac->PutB2AGate(temp);
+	Y->set_wire_id(index, temp->get_wire_id(0));
+
+	for (int i = 1; i < n ; i++){
+		for (int j = 0; j < i; j++){
+
+			//  b[i]=b[i]-(L[i*n+j]*Y[j])
+			
+			index = i*n+j;
+			temp1 = ExtractIndex(L, index, bitlen, ac, bc, yc);
+			index = j;
+			temp2 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
+			temp2 = bc->PutFPGate(temp1, temp2, MUL, no_status);
+			index = i;
+			temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
+			temp = bc->PutFPGate(temp1, temp2, SUB, no_status);
+			temp = ac->PutB2AGate(temp);
+			index = i;
+			b->set_wire_id(index, temp->get_wire_id(0));
+		}
+
+
+	//Y[i]=b[i]/L[i*n+i]
+	index = i;
+	temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
+	index = i*n+i;
+	temp2 = ExtractIndex(L, index, bitlen, ac, bc, yc);
+	temp = bc->PutFPGate(temp1,temp2, DIV, no_status);
+	temp = ac->PutB2AGate(temp);
+	index = i;
+	Y->set_wire_id(index, temp->get_wire_id(0));
+	}
+
+Y = ac->PutCombinerGate(Y);
+return Y;
+
 }
