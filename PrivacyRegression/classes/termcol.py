@@ -16,6 +16,6 @@ class utils:
         file = open(destination, "w")
         for element in np.nditer(List):
             #file = file / 10^7
-            file.write(str(np.round(element, 4))+'\n')
+            file.write(str(np.round(element, 2))+'\n')
         file.close
         
