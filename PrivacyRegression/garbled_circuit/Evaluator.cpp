@@ -33,8 +33,12 @@ int main(int argc, char** argv) {
 
 	// Reading the inputs in the /input folder and parsing them in a std::vector
 	std::vector<double> evaluator_data;
-	evaluator_data = get_input("../input/Evaluator_4");
-	print_vector(evaluator_data, nvals, "Opening Evaluator data...");
+	muA = get_input("../inputs/muA");
+	mub = get_input("../inputs/mub");
+
+	print_vector(muA, nvals, "Opening Evaluator data...");
+	print_vector(mub, nvals, "Opening Evaluator data...");
+
 
 	seclvl seclvl = get_sec_lvl(secparam);
 

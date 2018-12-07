@@ -17,7 +17,7 @@ from progressbar import ProgressBar
 ##---------* Functions *----------##
 
 class Users:
-    def __init__(self, public_key, X, Y, verbose=False):
+    def __init__(self, public_key, X, Y, verbose=False, encrypt=True):
         # Programm parameters
         self.verbose = verbose
         self.public_key = public_key
@@ -43,9 +43,14 @@ class Users:
             b = np.dot(y,x)
             bar.update()
             # append the contribution list, each element of c is [enc(Ai), enc(bi)]
-            self.c.append(self.encrypt(a,b))
+            if (encrypt):
+                self.c.append(self.encrypt(a,b))
+            else:
+                self.c.append([a,b])
         print('\r')
-        if (self.verbose): print(tc.OKGREEN+"\t --> Users have encrypted their contribution with CSP's public key : OK"+tc.ENDC)
+        if (self.verbose): 
+            if (encrypt): print(tc.OKGREEN+"\t --> Users have encrypted their contribution with CSP's public key : OK"+tc.ENDC)
+            else : print(tc.OKGREEN+"\t --> Users have send (in clair) their contribution with CSP's public key : OK"+tc.ENDC)
 
 
     def encrypt(self, A, b):

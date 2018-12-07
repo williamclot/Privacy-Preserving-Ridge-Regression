@@ -1,3 +1,5 @@
+import numpy as np
+
 class termcol:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -7,3 +9,12 @@ class termcol:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+class utils:
+    def ParseToFile(List, destination):
+        """Parses List to destination file (one element per line)"""
+        file = open(destination, "w")
+        for element in np.nditer(List):
+            file.write(str(np.round(element, 4))+'\n')
+        file.close
+        

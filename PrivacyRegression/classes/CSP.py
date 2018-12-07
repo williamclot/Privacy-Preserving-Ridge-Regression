@@ -11,19 +11,24 @@ from phe import paillier
 import numpy as np
 import math
 from termcol import termcol as tc
+from termcol import utils as utils
 
 ##---------* Functions *----------##
 
 class CSP:
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=False, encrypt=False):
         # Programm parameters
         self.verbose = verbose
+        self.encrypt = encrypt
 
         if (self.verbose): print(tc.WARNING+"Initiating the CSP..."+tc.ENDC)
 
         # Generate the public and private key used for Paillier encryption and decryption
         self.public_key, self.private_key = paillier.generate_paillier_keypair()
         if (self.verbose): print(tc.OKGREEN+"\t --> Key pair generated: OK"+tc.ENDC)
+
+        self.Amask = 0
+        self.bmask = 0
 
 
     def decrypt(self, A):
@@ -32,10 +37,14 @@ class CSP:
 
         return vector_func(A)
 
-
-
-
-
-
-
-
+    def receiveEvaluator(self, Amask, bmask):
+        if(self.encrypt):
+            self.Amask = self.decrypt(Amask)
+            self.bmask = self.decrypt(bmask)
+        else:
+            self.Amask = Amask
+            self.bmask = bmask
+        print(Amask.size)
+        
+        utils.ParseToFile(self.Amask, "garbled_circuit/inputs/Amask")
+        utils.ParseToFile(self.bmask, "garbled_circuit/inputs/bmask")
