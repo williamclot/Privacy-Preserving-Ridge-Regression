@@ -18,3 +18,7 @@ RUN apt-get install -q -y git
 RUN cd /home && git clone https://github.com/encryptogroup/ABY
 RUN cd /home/ABY/ && mkdir build && cd build/ && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && make && make install
 RUN cd /home/ && rm -rf ABY
+
+# Setting Working directory to /home
+WORKDIR /home
+RUN apt-get install -q -y iputils-ping
