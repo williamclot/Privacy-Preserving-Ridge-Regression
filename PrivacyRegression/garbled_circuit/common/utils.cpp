@@ -34,8 +34,8 @@ void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 	parsing_ctx options[] =
 		{ 
 			{(void*) &int_testbit, T_NUM, "i", "test bit", false, false },
-			{(void*) nvals, T_NUM, "n",	"Number of parallel operation elements", false, false },
-			{(void*) bitlen, T_NUM, "b", "Bit-length, default 32", false,false },
+			{(void*) nvals, T_NUM, "n",	"Number of parallel operation elements", true, false },
+			{(void*) bitlen, T_NUM, "b", "Bit-length, default 32", false, false },
 			{(void*) secparam, T_NUM, "s", "Symmetric Security Bits, default: 128", false, false },
 			{(void*) address, T_STR, "a", "IP-address, default: localhost", false, false },
 			{(void*) circuit, T_STR, "c", "circuit file name", false, false },
@@ -43,11 +43,11 @@ void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 			{(void*) test_op, T_NUM, "t", "Single test (leave out for all operations), default: off", false, false }
 		};
 
-	// if (!parse_options(argcp, argvp, options, sizeof(options) / sizeof(parsing_ctx))) {
-	// 	print_usage(*argvp[0], options, sizeof(options) / sizeof(parsing_ctx));
-	// 	std::cout << "Exiting" << std::endl;
-	// 	exit(0);
-	// }
+	if (!parse_options(argcp, argvp, options, sizeof(options) / sizeof(parsing_ctx))) {
+		print_usage(*argvp[0], options, sizeof(options) / sizeof(parsing_ctx));
+		std::cout << "Exiting" << std::endl;
+		exit(0);
+	}
 
 	if (int_port != 0) {
 		assert(int_port < 1 << (sizeof(uint16_t) * 8));

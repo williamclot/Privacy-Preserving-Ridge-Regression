@@ -32,14 +32,15 @@ int main(int argc, char** argv) {
 	read_test_options(&argc, &argv, &role, &bitlen, &nvals, &secparam, &address,
 		&port, &test_op, &test_bit, &circuit);
 
+		std::cout << nvals << std::endl;
+
+
 	// Reading the inputs in the /input folder and parsing them in a std::vector
 	std::vector<double> Amask;
 	std::vector<double> bmask;
 	
 	Amask = get_input("../inputs/Amask");
 	bmask = get_input("../inputs/bmask");
-
-	int n = sqrt(nvals);
 	
 	print_vector(Amask, nvals, "Opening CSP data (Amask)...");
 	print_vector(bmask, n, "Opening CSP data (bmask)...");
