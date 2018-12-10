@@ -74,10 +74,11 @@ class Evaluator:
         output = popen.stdout.read()
         print(output)
 
-    def getMu(self, dim):
+    def getMu(self, matrix):
         '''return μA or μb (mask)'''
-        mu = np.zeros((len(dim),len(dim[0])))
-        add_rand = lambda val: val + random.random()*10000
+        mu = np.zeros((len(matrix),len(matrix[0])))
+        val = len(str(matrix[0][0]))
+        add_rand = lambda val: val + random.random()*10**(val-2)
         vector_func = np.vectorize(add_rand)
         return vector_func(mu)
 
