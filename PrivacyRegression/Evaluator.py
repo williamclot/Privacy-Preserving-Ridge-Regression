@@ -86,8 +86,8 @@ class Evaluator:
     def getMu(self, matrix):
         '''return μA or μb (mask)'''
         mu = np.zeros((len(matrix),len(matrix[0])))
-        val = len(str(matrix[0][0]))
-        add_rand = lambda val: val + random.random()*10**(val-2)
+        reference_power = len(str(int(matrix[0][0])))
+        add_rand = lambda val: val + random.random()*10**(reference_power-1)
         vector_func = np.vectorize(add_rand)
         return vector_func(mu)
 

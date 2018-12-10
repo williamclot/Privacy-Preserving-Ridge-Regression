@@ -3,9 +3,9 @@ import socket, pickle
 import struct
 
 class parameters:
-    encrypt = True
+    encrypt = False
     verbose = True
-    train_frac = 0.005
+    train_frac = 0.9
     lamb = 0.1
 
 class members:
