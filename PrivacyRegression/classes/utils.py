@@ -2,6 +2,11 @@ import numpy as np
 import socket, pickle
 import struct
 
+class parameters:
+    encrypt = False
+    verbose = True
+    train_frac = 0.9
+    lamb = 0.1
 
 class members:
     CSP = {"ip": "172.18.0.23", "port": 5000}
@@ -19,9 +24,9 @@ class termcol:
     UNDERLINE = '\033[4m'
 
 class utils:
-    def encrypt(self, matrix):
+    def encrypt(self, matrix, key):
         '''return c = Cpkcsp(matrix)'''
-        encrypt_func = lambda plain_text: self.public_key.encrypt(plain_text)
+        encrypt_func = lambda plain_text: key.encrypt(plain_text)
         vector_func = np.vectorize(encrypt_func)
         return vector_func(matrix)
 

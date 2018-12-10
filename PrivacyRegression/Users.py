@@ -19,27 +19,29 @@ sys.path.insert(0,'./classes/')
 from utils import termcol as tc
 from utils import utils
 from utils import members
+from utils import parameters 
 from progressbar import ProgressBar
 u = utils();
 
 ##---------* Functions *----------##
 
 class Users:
-    def __init__(self, verbose=False, encrypt=True):
+    def __init__(self, train_frac, verbose, encrypt):
         # Programm parameters
         self.verbose = verbose
+        self.encrypt = encrypt
+        self.train_frac = train_frac
 
         if (self.verbose): print(tc.WARNING+"Initiating the Users [-]"+tc.ENDC)
 
         self.public_key = u.receiveViaSocket(members.Users, "\t --> Receiving public key from CSP")
-
         
         if (self.verbose): print(tc.WARNING+"Initiating the Users [-]"+tc.ENDC)
 
-        Xtrain, Ytrain, Xtest, Ytest = self.prepareValues(train_frac=0.8, verbose=self.verbose)
+        X, Y, Xtest, Ytest = self.prepareValues(train_frac=self.train_frac)
         # Turn the pandas dataframes into an array
-        Xlist = Xtrain.values
-        Ylist = Ytrain.values
+        Xlist = X.values
+        Ylist = Y.values
 
         #initialise the list of (Ai,bi) of all users 
         self.c = []
@@ -55,16 +57,18 @@ class Users:
             b = np.dot(y,x)
             bar.update()
             # append the contribution list, each element of c is [enc(Ai), enc(bi)]
-            if (encrypt):
-                self.c.append([u.encrypt(a), u.encrypt(b)])
+            if (self.encrypt):
+                self.c.append([u.encrypt(a, self.public_key), u.encrypt(b, self.public_key)])
             else:
                 self.c.append([a,b])
         print('\r')
         if (self.verbose): 
-            if (encrypt): print(tc.OKGREEN+"\t --> Users have encrypted their contribution with CSP's public key"+tc.ENDC)
+            if (self.encrypt): print(tc.OKGREEN+"\t --> Users have encrypted their contribution with CSP's public key"+tc.ENDC)
             else : print(tc.OKGREEN+"\t --> Users have send (in clair) their contribution with CSP's public key"+tc.ENDC)
+        
+        u.sendViaSocket(members.Evaluator, self.c, "\t --> Sending list of User's contributions (ai, bi)")
 
-    def prepareValues(self, train_frac=0.8, verbose=False):
+    def prepareValues(self, train_frac=0.8):
         '''
         Function to prepare the values of the dataset before calling the Regression Class
         '''
@@ -72,12 +76,12 @@ class Users:
         print(tc.OKGREEN + "Opening up the dataset..."+tc.ENDC)
         file = r'../Datasets/Concrete_Data.xlsx'
         dataset = pd.read_excel(file)
-        if(verbose): print(dataset.head(5))
+        if(self.verbose): print(dataset.head(5))
         
         # Randomizing the rows of the dataset (separation between training a testing dataset)
         print(tc.OKGREEN + "Shuffling the index of the dataset..."+tc.ENDC)
         dataset = dataset.sample(frac=1).reset_index(drop=True)
-        if(verbose): print(dataset.head(5))
+        if(self.verbose): print(dataset.head(5))
 
         # Extracting useful data (X, Y)
         data_lenght = dataset.shape[0]
@@ -100,7 +104,7 @@ class Users:
         return [vector_func(A), vector_func(b)]
 
             
-Users = Users(verbose=True, encrypt=False)
+Users = Users(train_frac=parameters.train_frac, verbose=parameters.verbose, encrypt=parameters.encrypt)
 
 
 

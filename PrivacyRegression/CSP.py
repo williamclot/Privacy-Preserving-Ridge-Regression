@@ -19,6 +19,8 @@ sys.path.insert(0,'./classes/')
 from utils import termcol as tc
 from utils import utils
 from utils import members
+from utils import parameters 
+
 u = utils();
 
 ##---------* Functions *----------##
@@ -39,27 +41,12 @@ class CSP:
         u.sendViaSocket(members.Users, self.public_key, '\t --> Sending public key to Users')
         u.sendViaSocket(members.Evaluator, self.public_key, '\t --> Sending public key to Evaluator')
 
-        self.Amask = 0
-        self.bmask = 0
-
-
-    def decrypt(self, A):
-        decrypt_func = lambda cipher_text: self.private_key.decrypt(cipher_text)
-        vector_func = np.vectorize(decrypt_func)
-        
-
-        return vector_func(A)
-
-    def receiveEvaluator(self, Amask, bmask):
+        [self.Amask, self.bmask] = u.receiveViaSocket(members.CSP, '\t --> Receiving Amask and bmask')
         if(self.encrypt):
             self.Amask = self.decrypt(Amask)
             self.bmask = self.decrypt(bmask)
-        else:
-            self.Amask = Amask
-            self.bmask = bmask
         
-        utils.ParseToFile(self.Amask, "garbled_circuit/inputs/Amask")
-        utils.ParseToFile(self.bmask, "garbled_circuit/inputs/bmask")
+        u.ParseToFile(self.Amask, "garbled_circuit/inputs/Amask")
+        u.ParseToFile(self.bmask, "garbled_circuit/inputs/bmask")
 
-
-CSP = CSP(verbose=True, encrypt=False)
+CSP = CSP(verbose=parameters.verbose, encrypt=parameters.encrypt)
