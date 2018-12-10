@@ -3,9 +3,9 @@ import socket, pickle
 import struct
 
 class parameters:
-    encrypt = False
+    encrypt = True
     verbose = True
-    train_frac = 0.9
+    train_frac = 0.005
     lamb = 0.1
 
 class members:
@@ -28,6 +28,12 @@ class utils:
         '''return c = Cpkcsp(matrix)'''
         encrypt_func = lambda plain_text: key.encrypt(plain_text)
         vector_func = np.vectorize(encrypt_func)
+        return vector_func(matrix)
+
+    def decrypt(self, matrix, key):
+        '''return c = Dpkcsp(matrix)'''
+        decrypt_func = lambda cipher_text: key.decrypt(cipher_text)
+        vector_func = np.vectorize(decrypt_func)
         return vector_func(matrix)
 
     def ParseToFile(self, List, destination):

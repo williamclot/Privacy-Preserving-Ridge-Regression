@@ -72,7 +72,9 @@ class Evaluator:
 
 
         if (self.verbose): print(tc.WARNING+"Initiating Circuit [-]"+tc.ENDC)
-        args = ("./garbled_circuit/build/Evaluator_Circuit", "-n", "25" , "-a", members.CSP['ip'])
+        if (self.verbose): print(tc.HEADER+"\t --> Circuit calculations..."+tc.ENDC)
+
+        args = ("./garbled_circuit/build/Evaluator_Circuit", "-n", str(size**2) , "-a", members.CSP['ip'])
         popen = subprocess.Popen(args, stdout=subprocess.PIPE)
         popen.wait()
         output = popen.stdout.read()
