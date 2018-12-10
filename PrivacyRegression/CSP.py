@@ -34,13 +34,10 @@ class CSP:
         # Generate the public and private key used for Paillier encryption and decryption
         self.public_key, self.private_key = paillier.generate_paillier_keypair()
         if (self.verbose): print(tc.OKGREEN+"\t --> Key pair generated"+tc.ENDC)
+
         # Sending public_key to the Users and CSP
         u.sendViaSocket(members.Users, self.public_key, '\t --> Sending public key to Users')
         u.sendViaSocket(members.Evaluator, self.public_key, '\t --> Sending public key to Evaluator')
-
-        
-        self.message = u.receiveViaSocket(members.CSP)
-        print(self.private_key.decrypt(self.message))
 
         self.Amask = 0
         self.bmask = 0

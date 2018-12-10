@@ -19,6 +19,7 @@ sys.path.insert(0,'./classes/')
 from utils import termcol as tc
 from utils import utils
 from utils import members
+from progressbar import ProgressBar
 u = utils();
 
 ##---------* Functions *----------##
@@ -28,29 +29,53 @@ class Users:
         # Programm parameters
         self.verbose = verbose
 
-        if (self.verbose):
-            print(tc.WARNING+"Initiating the Users [-]"+tc.ENDC)
+        if (self.verbose): print(tc.WARNING+"Initiating the Users [-]"+tc.ENDC)
 
         self.public_key = u.receiveViaSocket(members.Users, "\t --> Receiving public key from CSP")
 
-        print(self.public_key)
-        print(self.public_key.encrypt(2))
+        
+        if (self.verbose): print(tc.WARNING+"Initiating the Users [-]"+tc.ENDC)
 
-        u.sendViaSocket(members.CSP, self.public_key.encrypt(2))
+        Xtrain, Ytrain, Xtest, Ytest = self.prepareValues(train_frac=0.8, verbose=self.verbose)
+        # Turn the pandas dataframes into an array
+        Xlist = Xtrain.values
+        Ylist = Ytrain.values
 
+        #initialise the list of (Ai,bi) of all users 
+        self.c = []
+        # print(len(X))
+        bar = ProgressBar(len(X), title="User's contribution encryption")
 
-    def prepareValues(train_frac=0.8, verbose=False):
+        for i in range(len(X)):
+            x = np.array(Xlist[i])[np.newaxis]
+            #be careful, our x is the x.T in the paper
+            x = x.T
+            y = float(Ylist[i][0])
+            a = np.dot(x,x.T)
+            b = np.dot(y,x)
+            bar.update()
+            # append the contribution list, each element of c is [enc(Ai), enc(bi)]
+            if (encrypt):
+                self.c.append([u.encrypt(a), u.encrypt(b)])
+            else:
+                self.c.append([a,b])
+        print('\r')
+        if (self.verbose): 
+            if (encrypt): print(tc.OKGREEN+"\t --> Users have encrypted their contribution with CSP's public key"+tc.ENDC)
+            else : print(tc.OKGREEN+"\t --> Users have send (in clair) their contribution with CSP's public key"+tc.ENDC)
+
+    def prepareValues(self, train_frac=0.8, verbose=False):
         '''
         Function to prepare the values of the dataset before calling the Regression Class
         '''
         # Opening up the dataset using pandas to easily manipulate Dataframe variables
-        print(tc.HEADER + "Opening up the dataset..."+tc.ENDC)
+        print(tc.OKGREEN + "Opening up the dataset..."+tc.ENDC)
         file = r'../Datasets/Concrete_Data.xlsx'
         dataset = pd.read_excel(file)
         if(verbose): print(dataset.head(5))
         
         # Randomizing the rows of the dataset (separation between training a testing dataset)
-        print(tc.HEADER + "Shuffling the index of the dataset..."+tc.ENDC)
+        print(tc.OKGREEN + "Shuffling the index of the dataset..."+tc.ENDC)
         dataset = dataset.sample(frac=1).reset_index(drop=True)
         if(verbose): print(dataset.head(5))
 

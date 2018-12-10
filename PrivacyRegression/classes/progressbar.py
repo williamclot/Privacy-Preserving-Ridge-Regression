@@ -1,7 +1,7 @@
 from math import *
 import sys
 import time
-from termcol import termcol as tc
+from utils import termcol as tc
 
 class ProgressBar:
     """

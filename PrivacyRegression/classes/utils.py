@@ -19,6 +19,12 @@ class termcol:
     UNDERLINE = '\033[4m'
 
 class utils:
+    def encrypt(self, matrix):
+        '''return c = Cpkcsp(matrix)'''
+        encrypt_func = lambda plain_text: self.public_key.encrypt(plain_text)
+        vector_func = np.vectorize(encrypt_func)
+        return vector_func(matrix)
+
     def ParseToFile(self, List, destination):
         """Parses List to destination file (one element per line)"""
         file = open(destination, "w")
@@ -26,25 +32,6 @@ class utils:
             #file = file / 10^7
             file.write(str(np.round(element, 2))+'\n')
         file.close
-
-    # def recvall(self, sock, count):
-    #     buf = b''
-    #     while count:
-    #         newbuf = sock.recv(count)
-    #         if not newbuf: return None
-    #         buf += newbuf
-    #         count -= len(newbuf)
-    #     return buf
-
-    # def send_one_message(self, sock, data):
-    #     length = len(data)
-    #     sock.sendall(struct.pack('!I', length))
-    #     sock.sendall(data)
-
-    # def recv_one_message(self, sock):
-    #     lengthbuf = self.recvall(sock, 4)
-    #     length, = struct.unpack('!I', lengthbuf)
-    #     return self.recvall(self, sock, length)
     
     def sendViaSocket(self, party, object, description=""):
         '''Client side -- Sends pickled object to party'''

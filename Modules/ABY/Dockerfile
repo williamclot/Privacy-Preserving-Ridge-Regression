@@ -22,3 +22,8 @@ RUN cd /home/ && rm -rf ABY
 # Setting Working directory to /home
 WORKDIR /home
 RUN apt-get install -q -y iputils-ping
+RUN apt-get install -q -y python3-pip
+RUN pip3 install pandas
+RUN pip3 install phe
+RUN pip3 install numpy
+RUN pip3 install xlrd
