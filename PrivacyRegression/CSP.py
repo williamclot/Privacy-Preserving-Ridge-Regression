@@ -10,7 +10,7 @@ __date__ = "13/11/2018"
 from phe import paillier
 import numpy as np
 import math
-import sys
+import sys, subprocess
 import socket, pickle
 
 # System import classes folder as well
@@ -45,8 +45,15 @@ class CSP:
         if(self.encrypt):
             self.Amask = self.decrypt(Amask)
             self.bmask = self.decrypt(bmask)
-        
-        u.ParseToFile(self.Amask, "garbled_circuit/inputs/Amask")
-        u.ParseToFile(self.bmask, "garbled_circuit/inputs/bmask")
+
+        u.ParseToFile(self.Amask, "inputs/Amask")
+        u.ParseToFile(self.bmask, "inputs/bmask")
+
+        args = ("./garbled_circuit/build/CSP_Circuit", "-n", "25", "-a", members.CSP['ip'])
+        popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+        popen.wait()
+        output = popen.stdout.read()
+        print(output)
+
 
 CSP = CSP(verbose=parameters.verbose, encrypt=parameters.encrypt)

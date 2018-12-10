@@ -11,7 +11,7 @@ from phe import paillier
 import numpy as np
 import math
 import random
-import sys
+import sys, os, subprocess
 import socket, pickle
 
 # System import classes folder as well
@@ -65,8 +65,14 @@ class Evaluator:
         u.sendViaSocket(members.CSP, [self.Amask, self.bmask], '\t --> Sending Amask and bmask to CSP')
 
         if (self.verbose): print(tc.OKGREEN+"\t --> Preparing muA and mub to be put as input in garbled circuit"+tc.ENDC)
-        u.ParseToFile(self.muA, "garbled_circuit/inputs/muA")
-        u.ParseToFile(self.mub, "garbled_circuit/inputs/mub")
+        u.ParseToFile(self.muA, "inputs/muA")
+        u.ParseToFile(self.mub, "inputs/mub")
+
+        args = ("./garbled_circuit/build/Evaluator_Circuit", "-n", "25", "-a", members.CSP['ip'])
+        popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+        popen.wait()
+        output = popen.stdout.read()
+        print(output)
 
     def getMu(self, dim):
         '''return μA or μb (mask)'''

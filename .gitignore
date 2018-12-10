@@ -7,6 +7,8 @@
 /References
 .DS_Store
 inputs/
+circ/
+build/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -16,25 +18,6 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
-
-
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
 
 # Installer logs
 pip-log.txt

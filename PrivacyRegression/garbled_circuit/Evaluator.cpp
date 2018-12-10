@@ -15,7 +15,7 @@
 
 int main(int argc, char** argv) {
 
-	std::cout << "Launching Evaluator [-]" << std::endl;
+	// std::cout << "Launching Evaluator [-]" << std::endl;
 	
 	// Hardcoded client role
 	e_role role = CLIENT;
@@ -24,22 +24,24 @@ int main(int argc, char** argv) {
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
 	std::string circuit = "none.aby";
+	std::string input_file = "";
 	int32_t test_op = -1;
 	e_mt_gen_alg mt_alg = MT_OT;
 	uint32_t test_bit = 0;
 
 	// Reading options
 	read_test_options(&argc, &argv, &role, &bitlen, &nvals, &secparam, &address,
-		&port, &test_op, &test_bit, &circuit);
+		&port, &test_op, &input_file, &circuit);
 
 	// Reading the inputs in the /input folder and parsing them in a std::vector
 	std::vector<double> muA;
 	std::vector<double> mub;
-	muA = get_input("../inputs/muA");
-	mub = get_input("../inputs/mub");
+	muA = get_input("inputs/muA");
+	mub = get_input("inputs/mub");
 	int n = sqrt(nvals);
-	print_vector(muA, nvals, "Opening Evaluator data (muA)...");
-	print_vector(mub, n, "Opening Evaluator data (mub)...");
+	
+	// print_vector(muA, nvals, "Opening Evaluator data (muA)...");
+	// print_vector(mub, n, "Opening Evaluator data (mub)...");
 
 
 	seclvl seclvl = get_sec_lvl(secparam);

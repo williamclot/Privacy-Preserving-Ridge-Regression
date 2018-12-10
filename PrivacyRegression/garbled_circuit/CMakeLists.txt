@@ -10,7 +10,7 @@ endif()
 
 
 
-add_executable(Evaluator Evaluator.cpp common/circuit.cpp common/utils.cpp)
-add_executable(CSP CSP.cpp common/circuit.cpp common/utils.cpp)
-target_link_libraries(Evaluator ABY::aby ENCRYPTO_utils::encrypto_utils)
-target_link_libraries(CSP ABY::aby ENCRYPTO_utils::encrypto_utils)
+add_executable(Evaluator_Circuit Evaluator.cpp common/circuit.cpp common/utils.cpp)
+add_executable(CSP_Circuit CSP.cpp common/circuit.cpp common/utils.cpp)
+target_link_libraries(Evaluator_Circuit ABY::aby ENCRYPTO_utils::encrypto_utils)
+target_link_libraries(CSP_Circuit ABY::aby ENCRYPTO_utils::encrypto_utils)

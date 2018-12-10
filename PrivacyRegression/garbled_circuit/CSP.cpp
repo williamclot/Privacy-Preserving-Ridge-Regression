@@ -15,7 +15,7 @@
 
 int main(int argc, char** argv) {
 
-	std::cout << "Launching CSP [-]" << std::endl;
+	// std::cout << "Launching CSP [-]" << std::endl;
 
 	// Hardcoded server role
 	e_role role = SERVER;
@@ -23,6 +23,7 @@ int main(int argc, char** argv) {
 
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
+	std::string input_file = "";
 	std::string circuit = "none.aby";
 	int32_t test_op = -1;
 	e_mt_gen_alg mt_alg = MT_OT;
@@ -30,20 +31,19 @@ int main(int argc, char** argv) {
 
 	// Reading options
 	read_test_options(&argc, &argv, &role, &bitlen, &nvals, &secparam, &address,
-		&port, &test_op, &test_bit, &circuit);
-
-		std::cout << nvals << std::endl;
-
+		&port, &test_op, &input_file, &circuit);
 
 	// Reading the inputs in the /input folder and parsing them in a std::vector
 	std::vector<double> Amask;
 	std::vector<double> bmask;
 	
-	Amask = get_input("../inputs/Amask");
-	bmask = get_input("../inputs/bmask");
+	Amask = get_input("inputs/Amask");
+	bmask = get_input("inputs/bmask");
 	
-	print_vector(Amask, nvals, "Opening CSP data (Amask)...");
-	print_vector(bmask, n, "Opening CSP data (bmask)...");
+	int n = sqrt(nvals);
+
+	// print_vector(Amask, nvals, "Opening CSP data (Amask)...");
+	// print_vector(bmask, n, "Opening CSP data (bmask)...");
 
 	seclvl seclvl = get_sec_lvl(secparam);
 
