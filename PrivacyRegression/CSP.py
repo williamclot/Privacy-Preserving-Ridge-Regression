@@ -43,17 +43,19 @@ class CSP:
 
         [self.Amask, self.bmask] = u.receiveViaSocket(members.CSP, '\t --> Receiving Amask and bmask')
         if(self.encrypt):
+            if (self.verbose): print(tc.OKGREEN+"\t --> Decrypting Amask and bmask"+tc.ENDC)
             self.Amask = self.decrypt(Amask)
             self.bmask = self.decrypt(bmask)
 
+        if (self.verbose): print(tc.OKGREEN+"\t --> Preparing Amask and bmask to be put as input in garbled circuit"+tc.ENDC)
         u.ParseToFile(self.Amask, "inputs/Amask")
         u.ParseToFile(self.bmask, "inputs/bmask")
-
-        args = ("./garbled_circuit/build/CSP_Circuit", "-n", "25", "-a", members.CSP['ip'])
+        
+        if (self.verbose): print(tc.WARNING+"Initiating Circuit [-]"+tc.ENDC)
+        args = ("./garbled_circuit/build/CSP_Circuit", "-n", str(size**2), "-a", members.CSP['ip'])
         popen = subprocess.Popen(args, stdout=subprocess.PIPE)
         popen.wait()
         output = popen.stdout.read()
-        print(output)
 
 
 CSP = CSP(verbose=parameters.verbose, encrypt=parameters.encrypt)

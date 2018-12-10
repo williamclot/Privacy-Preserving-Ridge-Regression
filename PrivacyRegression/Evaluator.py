@@ -59,8 +59,10 @@ class Evaluator:
         #apply the masks μA and μb on A and b
         if (self.verbose): print(tc.OKGREEN+"\t --> Generating muA and mub"+tc.ENDC)
         self.muA , self.mub = self.getMu(self.A_enc), self.getMu(self.b_enc)
-        # self.muA_enc , self.mub_enc = self.encrypt(self.muA) , self.encrypt(self.mub)
+        if (self.verbose): print(tc.OKGREEN+"\t --> Adding muA and mub to A and b"+tc.ENDC)
         self.Amask , self.bmask = self.A_enc + self.muA , self.b_enc + self.mub
+
+        size = len(self.Amask)
 
         u.sendViaSocket(members.CSP, [self.Amask, self.bmask], '\t --> Sending Amask and bmask to CSP')
 
@@ -68,11 +70,16 @@ class Evaluator:
         u.ParseToFile(self.muA, "inputs/muA")
         u.ParseToFile(self.mub, "inputs/mub")
 
-        args = ("./garbled_circuit/build/Evaluator_Circuit", "-n", "25", "-a", members.CSP['ip'])
+
+        if (self.verbose): print(tc.WARNING+"Initiating Circuit [-]"+tc.ENDC)
+        args = ("./garbled_circuit/build/Evaluator_Circuit", "-n", "25" , "-a", members.CSP['ip'])
         popen = subprocess.Popen(args, stdout=subprocess.PIPE)
         popen.wait()
         output = popen.stdout.read()
-        print(output)
+        output = output.decode("utf-8")
+        beta = output.split("\n")[:-1]
+        beta = list(map(float, beta))
+        print(beta)
 
     def getMu(self, matrix):
         '''return μA or μb (mask)'''
