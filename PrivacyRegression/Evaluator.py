@@ -70,7 +70,6 @@ class Evaluator:
         u.ParseToFile(self.muA, "inputs/muA")
         u.ParseToFile(self.mub, "inputs/mub")
 
-
         if (self.verbose): print(tc.WARNING+"Initiating Circuit [-]"+tc.ENDC)
         if (self.verbose): print(tc.HEADER+"\t --> Circuit calculations..."+tc.ENDC)
 
