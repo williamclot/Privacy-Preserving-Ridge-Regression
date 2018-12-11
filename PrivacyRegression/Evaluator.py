@@ -80,6 +80,7 @@ class Evaluator:
         output = output.decode("utf-8")
         beta = output.split("\n")[:-1]
         beta = list(map(float, beta))
+        if (self.verbose): print(tc.OKGREEN+tc.BOLD+tc.UNDERLINE+"\t --> Beta result:"+tc.ENDC)
         print(beta)
 
     def getMu(self, matrix):

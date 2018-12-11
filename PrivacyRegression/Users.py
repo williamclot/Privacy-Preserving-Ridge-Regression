@@ -36,8 +36,6 @@ class Users:
 
         self.public_key = u.receiveViaSocket(members.Users, "\t --> Receiving public key from CSP")
         
-        if (self.verbose): print(tc.WARNING+"Initiating the Users [-]"+tc.ENDC)
-
         X, Y, Xtest, Ytest = self.prepareValues(train_frac=self.train_frac)
         # Turn the pandas dataframes into an array
         Xlist = X.values

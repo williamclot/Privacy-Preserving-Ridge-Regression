@@ -60,6 +60,7 @@ class CSP:
         popen = subprocess.Popen(args, stdout=subprocess.PIPE)
         popen.wait()
         output = popen.stdout.read()
+        if (self.verbose): print(tc.OKGREEN+tc.BOLD+tc.UNDERLINE+"\t --> Result (beta) has been calculated"+tc.ENDC)
 
 
 CSP = CSP(verbose=parameters.verbose, encrypt=parameters.encrypt)
