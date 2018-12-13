@@ -58,9 +58,12 @@ class Evaluator:
 
         #apply the masks μA and μb on A and b
         if (self.verbose): print(tc.OKGREEN+"\t --> Generating muA and mub"+tc.ENDC)
-        self.muA , self.mub = self.getMu(self.A_enc), self.getMu(self.b_enc)
+        self.muA, self.mub = self.getMu(self.A_enc), self.getMu(self.b_enc)
+        if(self.encrypt):
+            if (self.verbose): print(tc.OKGREEN+"\t --> Encrypting muA and mub"+tc.ENDC)
+            self.muA_enc, self.mub_enc = u.encrypt(self.muA, self.public_key), u.encrypt(self.mub, self.public_key)
         if (self.verbose): print(tc.OKGREEN+"\t --> Adding muA and mub to A and b"+tc.ENDC)
-        self.Amask , self.bmask = self.A_enc + self.muA , self.b_enc + self.mub
+        self.Amask, self.bmask = self.A_enc + self.muA , self.b_enc + self.mub
 
         size = len(self.Amask)
 
@@ -86,7 +89,7 @@ class Evaluator:
     def getMu(self, matrix):
         '''return μA or μb (mask)'''
         mu = np.zeros((len(matrix),len(matrix[0])))
-        reference_power = len(str(int(matrix[0][0])))
+        reference_power = parameters.mask_power
         add_rand = lambda val: val + random.random()*10**(reference_power-1)
         vector_func = np.vectorize(add_rand)
         return vector_func(mu)

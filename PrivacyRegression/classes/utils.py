@@ -3,10 +3,11 @@ import socket, pickle
 import struct
 
 class parameters:
-    encrypt = False
+    encrypt = True
     verbose = True
-    train_frac = 0.9
+    train_frac = 0.01
     lamb = 0.1
+    mask_power = 5 # Security parameter for muA mub
 
 class members:
     CSP = {"ip": "172.18.0.23", "port": 5000}
