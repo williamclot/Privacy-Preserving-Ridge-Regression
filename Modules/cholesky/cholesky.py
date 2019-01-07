@@ -32,20 +32,23 @@ def cholesky(A):
 A = [4, 12, -16, 12, 37, -43, -16, -43, 98]
 n = 3
 L = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+def cholesky_dec(A):
 
-for i in range(n):
-    # Calculating the np.dot inside the square root..
-    mul = 0
-    for k in range(n): mul += L[i*n+k]**2
-    # Getting diagonal elements
-    # L[i*n+i] = m.sqrt(A[i*n+i] - mul) 
-    L[i*n+i] = A[i*n+i] - mul
-    for j in range(i+1, n):
+    # Initiating empty matrix L
+    L = [0]*len(A)
+    n = m.sqrt(len(A))
+    
+    for i in range(n):
+        # Calculating the np.dot inside the square root..
         mul = 0
-        for k in range(n): 
-            mul += L[i*n+k]*L[j*n+k]
-        # Getting the [j][i] element
-        L[j*n+i] = (A[j*n+i]-mul)/L[i*n+i]
-        print("modifying :", j*n+i)
-print(L)
+        for k in range(n): mul += L[i*n+k]**2
+        # Getting diagonal elements
+        L[i*n+i] = m.sqrt(A[i*n+i] - mul) 
+        for j in range(i+1, n):
+            mul = 0
+            for k in range(n): 
+                mul += L[i*n+k]*L[j*n+k]
+            # Getting the [j][i] element
+            L[j*n+i] = (A[j*n+i]-mul)/L[i*n+i]
+    return L
 

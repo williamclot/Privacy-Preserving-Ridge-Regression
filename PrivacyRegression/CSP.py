@@ -47,11 +47,11 @@ class CSP:
             self.Amask = u.decrypt(self.Amask, self.private_key)
             self.bmask = u.decrypt(self.bmask, self.private_key)
 
-        size = len(self.Amask)
-
         if (self.verbose): print(tc.OKGREEN+"\t --> Preparing Amask and bmask to be put as input in garbled circuit"+tc.ENDC)
         u.ParseToFile(self.Amask, "inputs/Amask")
         u.ParseToFile(self.bmask, "inputs/bmask")
+
+        size = len(self.Amask)
         
         if (self.verbose): print(tc.WARNING+"Initiating Circuit [-]"+tc.ENDC)
         if (self.verbose): print(tc.HEADER+"\t --> Circuit calculations..."+tc.ENDC)

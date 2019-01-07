@@ -70,8 +70,8 @@ class Evaluator:
         u.sendViaSocket(members.CSP, [self.Amask, self.bmask], '\t --> Sending Amask and bmask to CSP')
 
         if (self.verbose): print(tc.OKGREEN+"\t --> Preparing muA and mub to be put as input in garbled circuit"+tc.ENDC)
-        u.ParseToFile(self.muA, "inputs/muA")
-        u.ParseToFile(self.mub, "inputs/mub")
+        u.ParseToFile(self.muA, 'inputs/muA')
+        u.ParseToFile(self.mub, 'inputs/mub')
 
         if (self.verbose): print(tc.WARNING+"Initiating Circuit [-]"+tc.ENDC)
         if (self.verbose): print(tc.HEADER+"\t --> Circuit calculations..."+tc.ENDC)
