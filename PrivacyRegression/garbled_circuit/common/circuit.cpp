@@ -203,7 +203,7 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 		temp = ExtractIndex(A, index, bitlen, ac, bc, yc); // A[i*(n+1)]
 		temp = bc->PutFPGate(temp, mul, SUB, no_status); // L[i*n+i] = (A[i*n+i] - mul) 
 
-		temp = SqurtApprox(temp, half, 5, ac, bc, yc);
+		temp = SqurtApprox(temp, half, 15, ac, bc, yc);
 		currentL = temp; // Nice little optimization to avoid extracting this value later on from L
 		temp = ac->PutB2AGate(temp); // convert L[i*n+i] from bc to ac
 		L->set_wire_id(index, temp->get_wire_id(0)); // append the new values to L.
@@ -257,6 +257,11 @@ share* Transpose(share* L, uint32_t n, ArithmeticCircuit *ac){
 }
 
 share* ForwardSubstitution(share* L, share* b, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+
+	/*Initial states of sharings.
+		L -> ARITH and combined
+		output -> ARITH
+	*/
 
 	// initializing a vector of zeros (same size as b)
 	share* Y = b;
