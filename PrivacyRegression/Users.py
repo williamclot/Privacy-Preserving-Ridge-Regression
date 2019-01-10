@@ -76,10 +76,11 @@ class Users:
         dataset = pd.read_excel(file)
         if(self.verbose): print(dataset.head(5))
         
-        # Randomizing the rows of the dataset (separation between training a testing dataset)
-        print(tc.OKGREEN + "Shuffling the index of the dataset..."+tc.ENDC)
-        dataset = dataset.sample(frac=1).reset_index(drop=True)
-        if(self.verbose): print(dataset.head(5))
+        if(parameters.randomize):
+            # Randomizing the rows of the dataset (separation between training a testing dataset)
+            print(tc.OKGREEN + "Shuffling the index of the dataset..."+tc.ENDC)
+            dataset = dataset.sample(frac=1).reset_index(drop=True)
+            if(self.verbose): print(dataset.head(5))
 
         # Extracting useful data (X, Y)
         data_lenght = dataset.shape[0]

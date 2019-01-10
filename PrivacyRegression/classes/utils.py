@@ -7,6 +7,7 @@ class parameters:
     verbose = True
     train_frac = 0.01
     lamb = 0.1
+    randomize = True
     mask_power = 5 # Security parameter for muA mub
 
 class members:
