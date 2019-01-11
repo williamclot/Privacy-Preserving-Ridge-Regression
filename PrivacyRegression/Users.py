@@ -72,20 +72,21 @@ class Users:
         '''
         # Opening up the dataset using pandas to easily manipulate Dataframe variables
         print(tc.OKGREEN + "Opening up the dataset..."+tc.ENDC)
-        file = r'../Datasets/Concrete_Data.xlsx'
-        dataset = pd.read_excel(file)
+        file = parameters.path
+        if(parameters.isExcel): dataset = pd.read_excel(file)
+        else: dataset = pd.read_table(file)
         if(self.verbose): print(dataset.head(5))
         
+        # Randomizing the rows of the dataset (separation between training a testing dataset)
         if(parameters.randomize):
-            # Randomizing the rows of the dataset (separation between training a testing dataset)
             print(tc.OKGREEN + "Shuffling the index of the dataset..."+tc.ENDC)
             dataset = dataset.sample(frac=1).reset_index(drop=True)
             if(self.verbose): print(dataset.head(5))
 
         # Extracting useful data (X, Y)
         data_lenght = dataset.shape[0]
-        Y = dataset[['Strength']]
-        X = dataset.drop(columns=['Strength', 'Superplasticizer'])
+        Y = dataset[parameters.Ycolumn]
+        X = dataset.drop(columns=parameters.columns)
         # Separation between train dataset and test dataset with train_frac
         index_separation = int(data_lenght * train_frac)
         Xtrain = X.iloc[:index_separation]

@@ -5,10 +5,16 @@ import struct
 class parameters:
     encrypt = True
     verbose = True
+
     train_frac = 0.01
     lamb = 0.1
     randomize = True
     mask_power = 5 # Security parameter for muA mub
+
+    path = r'../Datasets/Concrete_Data.xlsx'
+    isExcel=True
+    Ycolumn = ['Strength'] # Output column in dataset
+    columns=['Strength', 'Superplasticizer'] # Columns to delete in database
 
 class members:
     CSP = {"ip": "172.18.0.23", "port": 5000}
