@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 
 	// Hardcoded server role
 	e_role role = SERVER;
-	uint32_t bitlen = 1, nvals = 25, secparam = 128, nthreads = 1;
+	uint32_t nvals = 25, secparam = 128, nthreads = 1;
 
 	uint16_t port = 7766;
 	std::string address = "127.0.0.1";
@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 	uint32_t test_bit = 0;
 
 	// Reading options
-	read_test_options(&argc, &argv, &role, &bitlen, &nvals, &secparam, &address,
+	read_test_options(&argc, &argv, &role, &nvals, &secparam, &address,
 		&port, &test_op, &input_file, &circuit);
 
 	// Reading the inputs in the /input folder and parsing them in a std::vector

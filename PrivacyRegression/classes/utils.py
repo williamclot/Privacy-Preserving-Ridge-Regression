@@ -3,12 +3,12 @@ import socket, pickle
 import struct
 
 class parameters:
-    encrypt = True
+    encrypt = False
     verbose = True
 
     train_frac = 0.01
     lamb = 0.1
-    randomize = True
+    randomize = False
     mask_power = 5 # Security parameter for muA mub
 
     path = r'../Datasets/Concrete_Data.xlsx'

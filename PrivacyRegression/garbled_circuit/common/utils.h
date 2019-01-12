@@ -26,7 +26,7 @@ void print_vector(vector<double> &vect, int num, string name);
 
 // Function to read options and inputs
 void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
-	uint32_t* bitlen, uint32_t* nvals, uint32_t* secparam, std::string* address,
+	uint32_t* nvals, uint32_t* secparam, std::string* address,
 	uint16_t* port, int32_t* test_op, std::string* input_file, std::string* circuit);
 
 // Getting the input from a file

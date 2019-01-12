@@ -17,7 +17,7 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	e_mt_gen_alg mt_alg, e_sharing sharing, std::vector<double> A_data, std::vector<double> b_data) {
 
 	// we operate on doubles, so set bitlen to 64 bits
-	uint32_t bitlen = 64;
+	uint8_t bitlen = 64;
 	uint32_t max_gates = 400000000; // fixing this higher then in default ABY library
 
 	ABYParty* party = new ABYParty(role, address, port, seclvl, bitlen, nthreads, mt_alg, max_gates);
@@ -82,8 +82,8 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	// -----------------------------------
 
 	// FP substraction gate to remove mask mu_A from A + mu_a
-	share* A = MatrixSubstraction(Amask, muA, bc, nvals);
-	share* b = MatrixSubstraction(bmask, mub, bc, n);
+	share* A = MatrixSubstraction(Amask, muA, bc, nvals, bitlen);
+	share* b = MatrixSubstraction(bmask, mub, bc, n, bitlen);
 
 	// Cholesky decomposition of A
 	L = Cholesky(A, L, zero_share, half, bitlen, nvals, ac, bc, yc);
@@ -118,28 +118,30 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 	}
 }
 
-share* MatrixSubstraction(share *s_A, share *s_B, BooleanCircuit *bc, uint32_t nvals){
+share* MatrixSubstraction(share *s_A, share *s_B, BooleanCircuit *bc, uint32_t nvals, uint8_t bitlen){
 	/*~~~~ returns a share with a two by two substration between s_A and s_B ~~~~~*/
 
 	/*  Initial states of sharings.
 		s_A -> BOOL
 		s_B -> BOOL
+		out -> BOOL
 	*/
 
-	share* out = bc->PutFPGate(s_A, s_B, SUB, nvals, no_status); // s_A and s_B are in Boolean share
+	share* out = bc->PutFPGate(s_A, s_B, SUB, bitlen, nvals, no_status);
 	return out;
 }
 
-share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+share* ExtractIndex(share *s_x , uint32_t i, uint8_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 	/*~~~~ returns a share of the ith wire of s_x ~~~~~*/
 
 	/*  Initial states of sharings.
 		s_x -> ARITHM
 		out -> BOOL
+		out -> BOOL
 	*/
 
 	uint64_t zero = 0;
-	share* out = ac->PutCONSGate(zero,bitlen);
+	share* out = ac->PutCONSGate(zero, bitlen);
 
 	out->set_wire_id(0, s_x->get_wire_id(i));
 	
@@ -148,27 +150,28 @@ share* ExtractIndex(share *s_x , uint32_t i, uint32_t bitlen, ArithmeticCircuit 
 	return out;
 }
 
-share* SqurtApprox(share *element, share *half, uint32_t step, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+share* SqurtApprox(share *element, share *half, uint32_t step, uint8_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 	/*~~~~ returns a share with an Babylonian approximation of a square root of element ~~~~~*/
 
 	/*  Initial states of sharings.
 		element -> BOOL
 		half -> BOOL
+		out -> BOOL
 	*/
 
 	share* temp = element;
 	share* division;
 
 	for(int i=0; i<step; i++){
-		division = bc->PutFPGate(element, temp, DIV);
-		division = bc->PutFPGate(temp, division, ADD);
-		temp = bc->PutFPGate(half, division, MUL);
+		division = bc->PutFPGate(element, temp, DIV, bitlen);
+		division = bc->PutFPGate(temp, division, ADD, bitlen);
+		temp = bc->PutFPGate(half, division, MUL, bitlen);
 	}
 
 	return temp;
 }
 
-share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bitlen, uint32_t nvals, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+share* Cholesky(share *A, share *L, share *zero_share, share *half, uint8_t bitlen, uint32_t nvals, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 	/*~~~~ returns a share with the Cholesky decomposition of A ~~~~~*/
 
 	/*Initial states of sharings.
@@ -195,15 +198,15 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 		for(int k=0; k<n; k++){
 			index = i*n+k;
 			temp = ExtractIndex(L, index, bitlen, ac, bc, yc); // L[i*n+k]
-			temp = bc->PutFPGate(temp, temp, MUL, no_status); // currentL**2
-			mul = bc->PutFPGate(mul, temp, ADD, no_status); // mul += currentL**2
+			temp = bc->PutFPGate(temp, temp, MUL, bitlen, no_status); // currentL**2
+			mul = bc->PutFPGate(mul, temp, ADD, bitlen, no_status); // mul += currentL**2
 		}
 		
 		index=i*n+i;
 		temp = ExtractIndex(A, index, bitlen, ac, bc, yc); // A[i*(n+1)]
-		temp = bc->PutFPGate(temp, mul, SUB, no_status); // L[i*n+i] = (A[i*n+i] - mul) 
+		temp = bc->PutFPGate(temp, mul, SUB, bitlen, no_status); // L[i*n+i] = (A[i*n+i] - mul) 
 
-		temp = SqurtApprox(temp, half, 15, ac, bc, yc);
+		temp = SqurtApprox(temp, half, 15, bitlen, ac, bc, yc);
 		currentL = temp; // Nice little optimization to avoid extracting this value later on from L
 		temp = ac->PutB2AGate(temp); // convert L[i*n+i] from bc to ac
 		L->set_wire_id(index, temp->get_wire_id(0)); // append the new values to L.
@@ -215,14 +218,14 @@ share* Cholesky(share *A, share *L, share *zero_share, share *half, uint32_t bit
 				temp = ExtractIndex(L, index, bitlen, ac, bc, yc); // extract L[i*n+k] from L
 				index = j*n+k;
 				tempi = ExtractIndex(L, index, bitlen, ac, bc, yc); // extract L[j*n+k] from L
-				temp = bc->PutFPGate(temp, tempi, MUL, no_status); // compute L[i*n+k]*L[j*n+k]
-				mul = bc->PutFPGate(mul, temp, ADD, no_status); // mul += L[i*n+k]*L[j*n+k]
+				temp = bc->PutFPGate(temp, tempi, MUL, bitlen, no_status); // compute L[i*n+k]*L[j*n+k]
+				mul = bc->PutFPGate(mul, temp, ADD, bitlen, no_status); // mul += L[i*n+k]*L[j*n+k]
 			}
 			index = j*n+i;
 			temp = ExtractIndex(A, index, bitlen, ac, bc, yc); // A[j*n+i]
-			temp = bc->PutFPGate(temp, mul, SUB, no_status); // A[j*n+i]-mul
+			temp = bc->PutFPGate(temp, mul, SUB, bitlen, no_status); // A[j*n+i]-mul
 			index = i*n+i;
-			temp = bc->PutFPGate(temp, currentL, DIV, no_status);
+			temp = bc->PutFPGate(temp, currentL, DIV, bitlen, no_status);
 			temp = ac->PutB2AGate(temp); // convert bc to ac
 			index = j*n+i;
 			L->set_wire_id(index, temp->get_wire_id(0)); // append the new values to L.
@@ -256,7 +259,7 @@ share* Transpose(share* L, uint32_t n, ArithmeticCircuit *ac){
 	return temp;
 }
 
-share* ForwardSubstitution(share* L, share* b, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+share* ForwardSubstitution(share* L, share* b, share* zero_share, uint32_t n, uint8_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 
 	/*Initial states of sharings.
 		L -> ARITH and combined
@@ -277,7 +280,7 @@ share* ForwardSubstitution(share* L, share* b, share* zero_share, uint32_t n, ui
 	uint32_t index = 0;
 	share* temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
 	share* temp2 = ExtractIndex(L, index, bitlen, ac, bc, yc);
-	share* temp = bc->PutFPGate(temp1, temp2, DIV, no_status);
+	share* temp = bc->PutFPGate(temp1, temp2, DIV, bitlen, no_status);
 	temp = ac->PutB2AGate(temp);
 	Y->set_wire_id(index, temp->get_wire_id(0));
 
@@ -290,10 +293,10 @@ share* ForwardSubstitution(share* L, share* b, share* zero_share, uint32_t n, ui
 			temp1 = ExtractIndex(L, index, bitlen, ac, bc, yc);
 			index = j;
 			temp2 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
-			temp2 = bc->PutFPGate(temp1, temp2, MUL);
+			temp2 = bc->PutFPGate(temp1, temp2, MUL, bitlen);
 			index = i;
 			temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
-			temp = bc->PutFPGate(temp1, temp2, SUB);
+			temp = bc->PutFPGate(temp1, temp2, SUB, bitlen);
 			temp = ac->PutB2AGate(temp);
 			index = i;
 			b->set_wire_id(index, temp->get_wire_id(0));
@@ -304,7 +307,7 @@ share* ForwardSubstitution(share* L, share* b, share* zero_share, uint32_t n, ui
 		temp1 = ExtractIndex(b, index, bitlen, ac, bc, yc);
 		index = i*n+i;
 		temp2 = ExtractIndex(L, index, bitlen, ac, bc, yc);
-		temp = bc->PutFPGate(temp1,temp2, DIV);
+		temp = bc->PutFPGate(temp1,temp2, DIV, bitlen);
 		temp = ac->PutB2AGate(temp);
 		index = i;
 		Y->set_wire_id(index, temp->get_wire_id(0));
@@ -314,7 +317,7 @@ share* ForwardSubstitution(share* L, share* b, share* zero_share, uint32_t n, ui
 	return Y;
 }
 
-share* BackSubstitution(share* LT, share* Y, share* zero_share, uint32_t n, uint32_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
+share* BackSubstitution(share* LT, share* Y, share* zero_share, uint32_t n, uint8_t bitlen, ArithmeticCircuit *ac, BooleanCircuit *bc, Circuit *yc){
 
 	// initializing a vector of zeros (same size as b)
 	share* beta = Y;
@@ -331,7 +334,7 @@ share* BackSubstitution(share* LT, share* Y, share* zero_share, uint32_t n, uint
 	share* temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
 	index = (n-1)*(n+1);
 	share* temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
-	share* temp = bc->PutFPGate(temp1, temp2, DIV, no_status);
+	share* temp = bc->PutFPGate(temp1, temp2, DIV, bitlen, no_status);
 	temp = ac->PutB2AGate(temp);
 	index = n-1;
 	beta->set_wire_id(index, temp->get_wire_id(0));
@@ -343,10 +346,10 @@ share* BackSubstitution(share* LT, share* Y, share* zero_share, uint32_t n, uint
 			temp1 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
 			index = j;
 			temp2 = ExtractIndex(beta, index, bitlen, ac, bc, yc);
-			temp2 = bc->PutFPGate(temp1, temp2, MUL, no_status);
+			temp2 = bc->PutFPGate(temp1, temp2, MUL, bitlen, no_status);
 			index = i;
 			temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
-			temp = bc->PutFPGate(temp1, temp2, SUB, no_status);
+			temp = bc->PutFPGate(temp1, temp2, SUB, bitlen, no_status);
 			temp = ac->PutB2AGate(temp);
 			index = i;
 			Y->set_wire_id(index, temp->get_wire_id(0));
@@ -357,7 +360,7 @@ share* BackSubstitution(share* LT, share* Y, share* zero_share, uint32_t n, uint
 	temp1 = ExtractIndex(Y, index, bitlen, ac, bc, yc);
 	index = i*n+i;
 	temp2 = ExtractIndex(LT, index, bitlen, ac, bc, yc);
-	temp = bc->PutFPGate(temp1,temp2, DIV, no_status);
+	temp = bc->PutFPGate(temp1,temp2, DIV, bitlen, no_status);
 	temp = ac->PutB2AGate(temp);
 	index = i;
 	beta->set_wire_id(index, temp->get_wire_id(0));

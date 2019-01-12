@@ -26,7 +26,7 @@ void print_vector(std::vector<double> &vect, int num, string name) {
 }
 
 void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
-	uint32_t* bitlen, uint32_t* nvals, uint32_t* secparam, std::string* address,
+	uint32_t* nvals, uint32_t* secparam, std::string* address,
 	uint16_t* port, int32_t* test_op, std::string* input_file, std::string* circuit) {
 
 	uint32_t int_port = 0;
@@ -35,7 +35,6 @@ void read_test_options(int32_t* argcp, char*** argvp, e_role* role,
 		{ 
 			{(void*) input_file, T_STR, "i", "input_file", false, false },
 			{(void*) nvals, T_NUM, "n",	"Number of parallel operation elements", true, false },
-			{(void*) bitlen, T_NUM, "b", "Bit-length, default 32", false, false },
 			{(void*) secparam, T_NUM, "s", "Symmetric Security Bits, default: 128", false, false },
 			{(void*) address, T_STR, "a", "IP-address, default: localhost", false, false },
 			{(void*) &int_port, T_NUM, "p", "Port, default: 7766", false, false },
