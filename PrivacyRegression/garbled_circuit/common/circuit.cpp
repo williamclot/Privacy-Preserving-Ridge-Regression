@@ -159,14 +159,18 @@ share* SqurtApprox(share *element, share *half, uint32_t step, uint8_t bitlen, A
 		out -> BOOL
 	*/
 
-	share* temp = element;
-	share* division;
+	// Babylonian estimation (slow but precise) 1:24 for 7 columns
+	// share* temp = element;
+	// share* division;
 
-	for(int i=0; i<step; i++){
-		division = bc->PutFPGate(element, temp, DIV, bitlen);
-		division = bc->PutFPGate(temp, division, ADD, bitlen);
-		temp = bc->PutFPGate(half, division, MUL, bitlen);
-	}
+	// for(int i=0; i<step; i++){
+	// 	division = bc->PutFPGate(element, temp, DIV, bitlen);
+	// 	division = bc->PutFPGate(temp, division, ADD, bitlen);
+	// 	temp = bc->PutFPGate(half, division, MUL, bitlen);
+	// }
+	
+	// Square Root in ABY (quick) 0:28 for 7 columns
+	share* temp = bc->PutFPGate(element, SQRT, bitlen, no_status);
 
 	return temp;
 }
