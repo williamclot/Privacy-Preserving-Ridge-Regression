@@ -31,8 +31,6 @@ Finally all the meeting notes and datasets are stored in their relative folder a
 
 ## How to use this code:
 
-For the moment the different section of the project are still not connected with each other. 
-
 To execute the encryption with paillier homomorphic encryption you simply need python3 with a `phe` (pailler homomorphic encryption) that can be installed easily using:
 ```bash
 pip3 install phe
