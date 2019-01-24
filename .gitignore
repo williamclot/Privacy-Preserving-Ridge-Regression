@@ -1,16 +1,10 @@
-# datasets
-/Datasets/*
-!/Datasets/getDatasets.sh
-
 # production
 /.vscode
 /References
 .DS_Store
-inputs/*
-circ/
 build/
 
-# Byte-compiled / optimized / DLL files
+# Python Class related files
 __pycache__/
 *.py[cod]
 
@@ -19,8 +13,3 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
