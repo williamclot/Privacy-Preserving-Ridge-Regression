@@ -6,9 +6,10 @@
 /.vscode
 /References
 .DS_Store
-inputs/
+inputs/*
 circ/
 build/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
