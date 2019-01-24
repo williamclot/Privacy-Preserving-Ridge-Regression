@@ -81,8 +81,8 @@ class Evaluator:
 
         start = time.time()
 
-        args = ("cd ./garbled_circuit/build && ./Evaluator_Circuit", "-n", str(size**2) , "-a", members.CSP['ip'])
-        popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+        args = ("./Evaluator_Circuit", "-n", str(size**2) , "-a", members.CSP['ip'])
+        popen = subprocess.Popen(args, stdout=subprocess.PIPE, cwd="garbled_circuit/build")
         popen.wait()
         output = popen.stdout.read()
 

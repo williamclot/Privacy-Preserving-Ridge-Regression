@@ -18,7 +18,7 @@ void test_circuit(e_role role, const std::string& address, uint16_t port, seclvl
 
 	// we operate on doubles, so set bitlen to 64 bits
 	uint8_t bitlen = 64;
-	uint32_t max_gates = 400000000; // fixing this higher then in default ABY library
+	uint32_t max_gates = 40000000; // fixing this higher then in default ABY library
 
 	ABYParty* party = new ABYParty(role, address, port, seclvl, bitlen, nthreads, mt_alg, max_gates);
 

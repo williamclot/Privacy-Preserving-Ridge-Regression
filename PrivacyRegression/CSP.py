@@ -56,9 +56,9 @@ class CSP:
         if (self.verbose): print(tc.WARNING+"Initiating Circuit [-]"+tc.ENDC)
         if (self.verbose): print(tc.HEADER+"\t --> Circuit calculations..."+tc.ENDC)
 
-        if (self.verbose): print("cd ./garbled_circuit/build && ./CSP_Circuit -n "+str(size**2)+" -a "+members.CSP['ip'])
-        args = ("cd ./garbled_circuit/build && ./CSP_Circuit", "-n", str(size**2), "-a", members.CSP['ip'])
-        popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+        if (self.verbose): print("cd garbled_circuit/build && ./CSP_Circuit -n "+str(size**2)+" -a "+members.CSP['ip'])
+        args = ("./CSP_Circuit", "-n", str(size**2), "-a", members.CSP['ip'])
+        popen = subprocess.Popen(args, stdout=subprocess.PIPE, cwd="garbled_circuit/build")
         popen.wait()
         output = popen.stdout.read()
         if (self.verbose): print(tc.OKGREEN+tc.BOLD+tc.UNDERLINE+"\t --> Result (beta) has been calculated"+tc.ENDC)
