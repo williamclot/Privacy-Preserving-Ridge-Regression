@@ -37,8 +37,8 @@ int main(int argc, char** argv) {
 	std::vector<double> Amask;
 	std::vector<double> bmask;
 	
-	Amask = get_input("inputs/Amask");
-	bmask = get_input("inputs/bmask");
+	Amask = get_input("../../inputs/Amask");
+	bmask = get_input("../../inputs/bmask");
 	
 	int n = sqrt(nvals);
 

@@ -36,8 +36,8 @@ int main(int argc, char** argv) {
 	// Reading the inputs in the /input folder and parsing them in a std::vector
 	std::vector<double> muA;
 	std::vector<double> mub;
-	muA = get_input("inputs/muA");
-	mub = get_input("inputs/mub");
+	muA = get_input("../../inputs/muA");
+	mub = get_input("../../inputs/mub");
 	int n = sqrt(nvals);
 	
 	// print_vector(muA, nvals, "Opening Evaluator data (muA)...");
