@@ -3,7 +3,7 @@ import socket, pickle
 import struct
 
 class parameters:
-    encrypt = False
+    encrypt = True
     verbose = True
 
     train_frac = 0.01
